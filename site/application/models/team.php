@@ -52,6 +52,21 @@ class Team extends CI_Model {
 		}
 	}
 
+	public function get_teams() {
+		$this->db->from('team');
+		$query = $this->db->get();
+
+		$i = 0;
+		foreach($query->result() as $row) {
+			$teams[$i]['name'] = $row->name;
+			$teams[$i]['points'] = $row->points;
+			$teams[$i]['quest'] = $row->current_quest_id;
+			$i++;
+		}
+
+		return $teams;
+	}
+
 	/**
 	 * Returns the current quest of the team
 	 */
@@ -79,9 +94,15 @@ class Team extends CI_Model {
 		$this->db->update('team');
 	}
 
-	public function update_last_answered($id, $time) {
+	public function update_last_answered($team_id, $time) {
 		$this->db->set('last_answered', $time);
-		$this->db->where('id', $id);
+		$this->db->where('id', $team_id);
+		$this->db->update('team');
+	}
+
+	public function add_points($team_id, $points) {
+		$this->db->set('points', "points+$points", FALSE);
+		$this->db->where('id', $team_id);
 		$this->db->update('team');
 	}
 }

@@ -1,3 +1,4 @@
+<div id="debug_message"></div>
 <div id="content">
 <div id="messages">
 <?php

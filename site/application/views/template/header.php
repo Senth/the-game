@@ -13,6 +13,7 @@ echo js_asset('jquery-1.7.2.min.js') . "\n";
 echo js_asset('jquery-ui-1.8.20.custom.min.js') . "\n";
 echo js_asset('forms.js') . "\n";
 echo js_asset('messages.js') . "\n";
+echo js_asset('debugging.js') . "\n";
 echo js_asset('event_handler.js') . "\n";
 echo js_asset('ajax_forms.js') . "\n";
 ?>

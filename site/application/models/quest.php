@@ -6,12 +6,6 @@ class Quest extends CI_Model {
 	}
 
 	public function get_quest($id) {
-		$this->db->select('main');
-		$this->db->select('sub');
-		$this->db->select('html');
-		$this->db->select('html_is_php');
-		$this->db->select('first_team_id');
-		$this->db->select('has_answer_box');
 		$this->db->from('quest');
 		$this->db->where('id', $id);
 
@@ -93,5 +87,17 @@ class Quest extends CI_Model {
 		$query = $this->db->get();
 
 		return $query->num_rows() == 1;
+	}
+
+	public function set_start_time($quest_id, $time) {
+		$this->db->set('start_time', $time);
+		$this->db->where('id', $quest_id);
+		$this->db->update('quest');
+	}
+
+	public function set_first_team($quest_id, $team_id) {
+		$this->db->set('first_team_id', $team_id);
+		$this->db->where('id', $quest_id);
+		$this->db->update('quest');
 	}
 }

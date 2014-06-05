@@ -14,7 +14,7 @@
 | path to your installation.
 |
 */
-$config['base_url']	= 'http://localhost:8888/game/';
+$config['base_url']	= 'http://localhost/game/';
 
 /*
 |--------------------------------------------------------------------------

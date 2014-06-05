@@ -1,0 +1,161 @@
+body,html {
+	padding: 0px;
+	margin: 0px;
+	background-color: #050505;
+	color: #DDD;
+}
+
+#wrap {
+	margin: 0 auto;
+	height: 100%;
+}
+
+#header {
+	padding-top: 35px;
+	border-bottom: 1px solid #555555;
+/* 	background-color: #005500; */
+	margin: 0px;
+}
+
+#logo {
+	position: relative;
+	height: 150px;
+	left: 50%;
+	margin-left: -384px;
+	background-image: url('../image/logo.png');
+	background-repeat: no-repeat;
+}
+
+#content {
+	padding: 20px;
+	min-height: 600px;
+	overflow: auto;
+/* 	background-color: #550000; */
+	border-right: 1px solid #555555;
+}
+
+#sidebar {
+	position: relative;
+	float: right;
+	width: 260px;
+	padding: 20px;
+/* 	margin-bottom: -5000px; */
+/* 	padding-bottom: 5000px; */
+/* 	background-color: #000055; */
+}
+
+#footer {
+	clear: both;
+}
+
+input[type="text"].middle_form, input[type="password"].middle_form {
+	float: right;
+	position: relative;
+	min-width: 200px;
+	width: 100%;
+	margin: 0px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+#middle_form-wrapper {
+	float: left;
+	left: 50%;
+	position: relative;
+	text-align: center;
+}
+
+#game {
+	position: relative;
+	float: left;
+	left: -50%;
+	text-align: center;
+}
+
+#middle_form {
+	position: relative;
+	float: left;
+	left: -50%;
+	text-align: left;
+	background-color: #111111;
+	border: 1px solid #333;
+	padding: 1em 2em 1em 2em;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+#answer_box {
+	margin-top: 30px;
+}
+
+h1 {
+	color: #777;
+	margin-bottom: 15px;
+	text-shadow: 1px 1px 0 white;
+}
+
+input[type="submit"].big, .button_big:visited, .button_big:active, .button_big:link {
+	margin: 2px;
+/* 	border: none; */
+	padding: 8px;
+	font-size: 12px;
+/* 	font-family: Arial; */
+/* 	text-decoration: none; */
+/* 	-moz-border-radius: 4px; */
+/* 	-webkit-border-radius: 4px; */
+/* 	background-color: #9ab; */
+/* 	color: #fff; */
+/* 	box-shadow: 0 1px 0 white; */
+/* 	-moz-box-shadow: 0 1px 0 white; */
+/* 	-webkit-box-shadow: 0 1px 0 white; */
+}
+
+input[type="submit"], .button:visited, .button:active, .button:link {
+	margin: 2px;
+/* 	border: none; */
+	padding: 4px;
+	font-size: 12px;
+/* 	font-family: Arial; */
+/* 	text-decoration: none; */
+/* 	-moz-border-radius: 4px; */
+/* 	-webkit-border-radius: 4px; */
+/* 	background-color: #9ab; */
+/* 	color: #fff; */
+/* 	box-shadow: 0 1px 0 white; */
+/* 	-moz-box-shadow: 0 1px 0 white; */
+/* 	-webkit-box-shadow: 0 1px 0 white; */
+}
+
+input[type="submit"]:hover, .button:hover, .button_big:hover {
+/* 	background-color: #89a; */
+	cursor: pointer;
+}
+
+input[type="text"], input[type="password"] {
+	background-color: #fff;
+	border: 1px solid #abc;
+	padding: 2px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+
+input[type="text"].big, input[type="password"].big {
+	display: block;
+	font-size: 12px;
+	background-color: #fff;
+	border: 5px;
+	padding: 1em;
+}
+
+.error {
+	color: #a22;
+}
+
+.success {
+	font-size: 12pt;
+	color: #293;
+}
+
+.form_default {
+	color: #90a0cf;
+}

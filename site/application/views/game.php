@@ -54,6 +54,7 @@ $(document).ready(function() {
 	$('#quest').data('id', -1);
 	$('#hints').data('count', 0);
 
+	getHints(true);
 	getQuest(true);
 });
 
@@ -95,20 +96,49 @@ function getQuest($use_timeout) {
 				}
 
 				// New hints?
-				if ($json.quest['show_hint_1'] && $('#hints').data('count') < 1) {
-					$('#hints').append('<p><strong>Hint 1:</strong> ' + $json.quest['hint_1_text'] + '</p>');
-					$('#hints').data('count', 1);
-				}
-				if ($json.quest['show_hint_2'] && $('#hints').data('count') < 2) {
-					$('#hints').append('<p><strong>Hint 2:</strong> ' + $json.quest['hint_2_text'] + '</p>');
-					$('#hints').data('count', 2);
-				}
+// 				if ($json.quest['show_hint_1'] && $('#hints').data('count') < 1) {
+// 					$('#hints').append('<p><strong>Hint 1:</strong> ' + $json.quest['hint_1_text'] + '</p>');
+// 					$('#hints').data('count', 1);
+// 				}
+// 				if ($json.quest['show_hint_2'] && $('#hints').data('count') < 2) {
+// 					$('#hints').append('<p><strong>Hint 2:</strong> ' + $json.quest['hint_2_text'] + '</p>');
+// 					$('#hints').data('count', 2);
+// 				}
 			}
 		}
 	});
 
 	if ($use_timeout === true) {
 		setTimeout('getQuest(true)', 1000);
+	}
+}
+
+function getHints($use_timeout) {
+	var $formData = {
+		ajax: true
+	}
+
+	var $base_url = '<?php echo base_url(); ?>';
+
+	$.ajax({
+		url: $base_url + 'game/get_hints',
+		type: 'POST',
+		data: $formData,
+		dataType: 'json',
+		success: function($json) {
+			if ($json === null || $json.success === undefined) {
+				addMessage('Return message is null, contact administrator', 'error');
+				return;
+			}
+
+			// TODO
+
+			displayAjaxReturnMessages($json);
+		}
+	});
+
+	if ($use_timeout === true) {
+		setTimeout('getHints(true)', 1000);
 	}
 }
 </script>

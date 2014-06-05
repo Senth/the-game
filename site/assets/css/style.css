@@ -152,10 +152,14 @@ input[type="text"].big, input[type="password"].big {
 }
 
 .success {
-	font-size: 12pt;
+/* 	font-size: 12pt; */
 	color: #293;
 }
 
 .form_default {
 	color: #90a0cf;
+}
+
+.small {
+	font-size: 8pt;
 }

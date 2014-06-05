@@ -3,9 +3,14 @@
 // TODO extend GAME_Controller instead
 class Login extends GAME_Controller {
 
+	public function __construct() {
+		parent::__construct();
+	}
+
 	public function index() {
 		// Redirect to game page if user is logged in.
 		if ($this->user_info->is_logged_in()) {
+			log_message('debug', 'Already logged in, redirecting to game');
 			redirect('game', 'refresh');
 		}
 
@@ -44,12 +49,14 @@ class Login extends GAME_Controller {
 
 	private function _show_login() {
 		$content['login_data'] = 'login_data';
-		$this->load_view('login', $content);	
+		$this->load_view('login', $content);
 	}
 
 	private function _login($team_id) {
+		log_message('debug', 'Logging in...');
 		$team_data = $this->team->get_team($team_id);
 		assert($team_data !== FALSE);
+		log_message('debug', "Team $team_data->name successfully logged in");
 		$this->user_info->login($team_id, $team_data->name);
 		$this->session->set_userdata('user', $this->user_info);
 

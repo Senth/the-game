@@ -83,7 +83,7 @@ class Game extends GAME_Controller {
 
 		$json_return['success'] = TRUE;
 
-		// TODO Check if hints shall be shown
+		// Check if hints shall be shown
 		$team = $this->team->get_team($this->user_info->get_id());
 		$time_since_started = time() - $team->started_quest;
 

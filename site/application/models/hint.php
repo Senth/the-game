@@ -16,7 +16,7 @@ class Hint extends CI_Model {
 		$result = null;
 		foreach ($query->result() as $row) {
 			$result[$i]['text'] = $row->text;
-			$result[$i]['time'] = $row->time;
+			$result[$i]['time'] = $row->time * 60;
 			$result[$i]['point_deduction'] = $row->point_deduction;
 			$i++;
 		}

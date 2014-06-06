@@ -19,10 +19,6 @@ class Game extends GAME_Controller {
 			redirect('login', 'refresh');
 		}
 		
-		if ($this->input->post('answer') !== FALSE) {
-			$this->_try_answer();
-		}
-
 		log_message('debug', 'game view');
 		$this->load_view('game', NULL);
 	}
@@ -97,10 +93,6 @@ class Game extends GAME_Controller {
 		}
 
 		echo json_encode($json_return);
-	}
-
-	public function try_answer() {
-		
 	}
 
 	public function try_html() {
@@ -181,21 +173,37 @@ class Game extends GAME_Controller {
 		echo json_encode($json_return);
 	}
 
-	private function _try_answer() {
+	public function try_answer() {
+		// Only handle ajax updates
+		if ($this->input->post('ajax') === FALSE) {
+			echo 'not ajax';
+			return;
+		}
+
+		$json_return['success'] = FALSE;
+
 		// Check if team can answer (time)
 		$team = $this->team->get_team($this->user_info->get_id());
-		$time_diff = time() - $team->last_answered;
-		if ($time_diff < 20) {
-			add_error('time', 'You still have ' . (20 - $time_diff) . ' seconds before you can answer.');
+		$time_diff = (time() - $team->last_answered);
+		if ($time_diff < self::ANSWER_DELAY) {
+			$time_left = self::ANSWER_DELAY - $time_diff;
+			add_error_json('You still have <span class="time_left">' . $time_left . '</span> seconds before you can answer.', $json_return);
+			$json_return['time_left'] = $time_left;
+	
 		}
 
 		// Check if it was the right answer
 		else if ($this->quest->is_right_answer($this->_current_quest_id, $this->input->post('answer'))) {
 			$this->_goto_next_quest();
+			$json_return['success'] = TRUE;
+			add_success_json('Correct answer! :D', $json_return);
 		} else {
-			add_error('wrong_anwser', 'Wrong answer please try again in 20 seconds.');
+			add_error_json('Wrong answer please try again in <span class="time_left">20</span> seconds.', $json_return);
+			$json_return['time_left'] = self::ANSWER_DELAY;
 			$this->team->update_last_answered($this->user_info->get_id(), time());
 		}
+
+		echo json_encode($json_return);
 	}
 
 	private function _goto_next_quest() {
@@ -256,4 +264,5 @@ class Game extends GAME_Controller {
 	}
 
 	private $_current_quest_id;
+	const ANSWER_DELAY = 20;
 }

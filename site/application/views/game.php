@@ -4,7 +4,9 @@
 <div id="hints"></div>
 <?php
 	echo '<div id="answer_box">';
-	echo form_open('game');
+
+	$form['id'] = 'answer_form';
+	echo form_open('game/try_answer', $form);
 
 	$input['type'] = 'text';
 	$input['name'] = 'answer';
@@ -12,9 +14,8 @@
 	$input['maxlength'] = '50';
 	$input['alt'] = 'Your answer';
 	$input['value'] = $input['alt'];
-	echo form_input($input);
 
-	echo form_submit('answer_submit', 'Answer');
+	echo form_input($input);
 	echo form_close();
 
 	echo '</div>';
@@ -23,7 +24,7 @@
 </div>
 <script type="text/javascript">
 var $messages = $('#messages');
-$('#answer').before($messages);
+$('#answer_form').before($messages);
 $('#content').remove('#messages');
 
 
@@ -36,18 +37,68 @@ $(document).ready(function() {
 	getHints(true);
 });
 
+var baseUrl = '<?php echo base_url(); ?>';
+
+var $answer = $('#answer');
+var $answer_form = $('#answer_form');
+$answer_form.submit(function (ev) {
+	var formData = {
+		ajax: true,
+		answer: $answer.val()
+	}
+
+	$.ajax({
+		url: $answer_form.attr('action'),
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
+		success: function(json) {
+			if (json === null || json.success === undefined) {
+				addMessage('Return message is null, contact administrator', 'error');
+				return;
+			}
+			
+			if (json.success) {
+				getQuest();
+				getHints();
+				$('#messages').children().remove();
+				displayAjaxReturnMessages(json);
+			}
+			else {
+				$timeLeft = $('.time_left')
+				if ($timeLeft.length == 0 || ($timeLeft.length > 0 && $timeLeft.data('time') == 0)) {
+					updateTimeLeft(json.time_left);
+					addMessage(json.error_messages, 'error', json.time_left);
+				}
+			}
+
+		}
+	});
+	$answer.val('');
+
+	ev.preventDefault();
+	return false;	
+});
+
+function updateTimeLeft(timeLeft) {
+	$timeLeft = $('.time_left');
+	$timeLeft.html(timeLeft);
+	$timeLeft.data('time', timeLeft);
+
+	if (timeLeft > 0) {
+		setTimeout('updateTimeLeft(' + (timeLeft - 1) + ')', 1000);
+	}
+}
+
 function getQuest($use_timeout) {
-	var $formData = {
+	var formData = {
 		ajax: true
 	}
 
-	var $base_url = '<?php echo base_url(); ?>';
-
-
 	$.ajax({
-		url: '<?php echo base_url('game/get_quest'); ?>',
+		url: baseUrl + 'game/get_quest',
 		type: 'POST',
-		data: $formData,
+		data: formData,
 		dataType: 'json',
 		success: function(json) {
 			if (json === null || json.success === undefined) {
@@ -56,7 +107,7 @@ function getQuest($use_timeout) {
 			}
 			
 			if (json.completed == true) {
-				window.location = '<?php echo base_url('game/completed'); ?>';
+				window.location = baseUrl + 'game/completed';
 			} else {
 				// New quest?
 				if (json.quest['id'] != $('#quest').data('id')) {
@@ -70,16 +121,6 @@ function getQuest($use_timeout) {
 					$('#hints').data('count', 0);
 					$('#quest').data('id', json.quest['id']);
 				}
-
-				// New hints?
-// 				if (json.quest['show_hint_1'] && $('#hints').data('count') < 1) {
-// 					$('#hints').append('<p><strong>Hint 1:</strong> ' + json.quest['hint_1_text'] + '</p>');
-// 					$('#hints').data('count', 1);
-// 				}
-// 				if (json.quest['show_hint_2'] && $('#hints').data('count') < 2) {
-// 					$('#hints').append('<p><strong>Hint 2:</strong> ' + json.quest['hint_2_text'] + '</p>');
-// 					$('#hints').data('count', 2);
-// 				}
 			}
 		}
 	});
@@ -90,16 +131,14 @@ function getQuest($use_timeout) {
 }
 
 function getHints($use_timeout) {
-	var $formData = {
+	var formData = {
 		ajax: true
 	}
 
-	var $base_url = '<?php echo base_url(); ?>';
-
 	$.ajax({
-		url: $base_url + 'game/get_hints',
+		url: baseUrl + 'game/get_hints',
 		type: 'POST',
-		data: $formData,
+		data: formData,
 		dataType: 'json',
 		success: function(json) {
 			if (json === null || json.success === undefined) {

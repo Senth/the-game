@@ -37,44 +37,52 @@ class Quest extends CI_Model {
 	public function get_next_quest_id($quest_id) {
 		$this->db->select('main');
 		$this->db->select('sub');
+		$this->db->select('arc_id');
 		$this->db->from('quest');
 		$this->db->where('id', $quest_id);
 
 		$query = $this->db->get();
 
-		$next['main'] = (int) $query->row()->main;
-		$next['sub'] = (int) $query->row()->sub;
+		$next_main = (int) $query->row()->main;
+		$next_sub = (int) $query->row()->sub;
+		$arc_id = $query->row()->arc_id;
 
 
 		// Check if there exist another sub
-		$next['sub']++;
+		$next_sub++;
 
-		$this->db->select('id');
-		$this->db->from('quest');
-		$this->db->where('main', $next['main']);
-		$this->db->where('sub', $next['sub']);
-		$query = $this->db->get();
-
-		if ($query->num_rows() == 1) {
-			return $query->row()->id;
+		$next_id = $this->_get_next_quest_id($arc_id, $next_main, $next_sub);
+		if ($next_id != 0) {
+			return $next_id;
 		}
 
 		// Else check for another main
-		$next['main']++;
-		$next['sub'] = 1;
-		
+		$next_main++;
+		$next_sub = 1;
+
+		return $this->_get_next_quest_id($arc_id, $next_main, $next_sub);
+	}
+
+	/**
+	 * Checks if there exist a quest with the specified main and sub
+	 * @param arc_id id of the arc to search in
+	 * @param main the main of the quest
+	 * @param sub the sub of the quest
+	 * @return id of the quest or 0 if none was found
+	 */ 
+	private function _get_next_quest_id($arc_id, $main, $sub) {
 		$this->db->select('id');
 		$this->db->from('quest');
 		$this->db->where('main', $next['main']);
 		$this->db->where('sub', $next['sub']);
+		$this->db->where('ard_id', $ard_id);
 		$query = $this->db->get();
 
 		if ($query->num_rows() == 1) {
 			return $query->row()->id;
+		} else {
+			return 0;
 		}
-
-		// Else no additional quest exists
-		return 0;
 	}
 
 	public function is_right_answer($quest_id, $answer) {

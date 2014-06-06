@@ -73,9 +73,9 @@ class Quest extends CI_Model {
 	private function _get_next_quest_id($arc_id, $main, $sub) {
 		$this->db->select('id');
 		$this->db->from('quest');
-		$this->db->where('main', $next['main']);
-		$this->db->where('sub', $next['sub']);
-		$this->db->where('ard_id', $ard_id);
+		$this->db->where('main', $main);
+		$this->db->where('sub', $sub);
+		$this->db->where('arc_id', $arc_id);
 		$query = $this->db->get();
 
 		if ($query->num_rows() == 1) {

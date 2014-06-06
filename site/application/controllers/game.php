@@ -51,7 +51,6 @@ class Game extends GAME_Controller {
 			$json_return['success'] = TRUE;
 			echo json_encode($json_return);
 		}
-		// TODO check when time is up
 		// Show current quest
 		else {
 			$quest = $this->quest->get_quest($this->_current_quest_id);
@@ -185,6 +184,7 @@ class Game extends GAME_Controller {
 		// Check if team can answer (time)
 		$team = $this->team->get_team($this->user_info->get_id());
 		$time_diff = (time() - $team->last_answered);
+		log_message('debug', 'check for right answer');
 		if ($time_diff < self::ANSWER_DELAY) {
 			$time_left = self::ANSWER_DELAY - $time_diff;
 			add_error_json('You still have <span class="time_left">' . $time_left . '</span> seconds before you can answer.', $json_return);
@@ -194,6 +194,7 @@ class Game extends GAME_Controller {
 
 		// Check if it was the right answer
 		else if ($this->quest->is_right_answer($this->_current_quest_id, $this->input->post('answer'))) {
+			log_message('debug', 'correct answer');
 			$this->_goto_next_quest();
 			$json_return['success'] = TRUE;
 			add_success_json('Correct answer! :D', $json_return);
@@ -208,7 +209,7 @@ class Game extends GAME_Controller {
 
 	private function _goto_next_quest() {
 		// Add points to the team
-		$points = $this->_calculate_points(NULL);
+		$points = $this->_calculate_points();
 		$this->team->add_points($this->user_info->get_id(), $points);
 
 		// Answered first? Set first_team_id then
@@ -217,14 +218,14 @@ class Game extends GAME_Controller {
 			$this->quest->set_first_team($quest->id, $this->user_info->get_id());
 		}
 
-
+		log_message('debug', '_goto_next_quest() - set new quest');
 		// Set new quest
 		$next_quest_id = $this->quest->get_next_quest_id($this->_current_quest_id);
-		$this->_current_quest_id = $this->team->get_current_quest($this->user_info->get_id());
 		$this->team->set_current_quest($this->user_info->get_id(), $next_quest_id);
+		$this->_current_quest_id = $this->team->get_current_quest($this->user_info->get_id());
 	}
 
-	private function _calculate_points(&$json_return) {
+	private function _calculate_points(&$json_return = NULL) {
 		$quest = $this->quest->get_quest($this->_current_quest_id);
 		$points = $quest->point_standard;
 

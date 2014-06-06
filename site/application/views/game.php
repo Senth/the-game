@@ -111,7 +111,7 @@ function getQuest($use_timeout) {
 			} else {
 				// New quest?
 				if (json.quest['id'] != $('#quest').data('id')) {
-					$('#quest').children().remove();
+					$('#quest').html('');
 					$('#hints').children().remove();
 
 					$('#quest').append('<h1>Quest ' + json.quest['main'] + '–' + json.quest['sub'] + '</h1>');

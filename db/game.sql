@@ -1,32 +1,71 @@
 -- phpMyAdmin SQL Dump
--- version 3.3.4
+-- version 4.1.12
 -- http://www.phpmyadmin.net
 --
--- Host: localhost
--- Generation Time: Jun 04, 2012 at 04:24 PM
--- Server version: 5.1.62
--- PHP Version: 5.3.13-pl0-gentoo
+-- Värd: localhost:3306
+-- Tid vid skapande: 06 jun 2014 kl 20:04
+-- Serverversion: 5.5.34
+-- PHP-version: 5.5.10
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
 --
--- Database: `game`
+-- Databas: `game`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `quest`
+-- Tabellstruktur `arc`
+--
+
+CREATE TABLE IF NOT EXISTS `arc` (
+  `id` int(5) NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) COLLATE utf8_swedish_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur `ci_sessions`
+--
+
+CREATE TABLE IF NOT EXISTS `ci_sessions` (
+  `session_id` varchar(40) COLLATE utf8_swedish_ci NOT NULL DEFAULT '0',
+  `ip_address` varchar(45) COLLATE utf8_swedish_ci NOT NULL DEFAULT '0',
+  `user_agent` varchar(120) COLLATE utf8_swedish_ci NOT NULL,
+  `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
+  `user_data` text COLLATE utf8_swedish_ci NOT NULL,
+  PRIMARY KEY (`session_id`),
+  KEY `last_activity_idx` (`last_activity`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur `hint`
+--
+
+CREATE TABLE IF NOT EXISTS `hint` (
+  `id` int(5) NOT NULL AUTO_INCREMENT,
+  `quest_id` int(5) NOT NULL,
+  `text` varchar(100) COLLATE utf8_swedish_ci NOT NULL,
+  `time` int(5) NOT NULL,
+  `point_deduction` int(3) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci AUTO_INCREMENT=3 ;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur `quest`
 --
 
 CREATE TABLE IF NOT EXISTS `quest` (
   `id` int(5) NOT NULL AUTO_INCREMENT,
+  `arc_id` int(5) NOT NULL,
   `main` int(5) NOT NULL,
   `sub` int(5) NOT NULL,
   `html` text COLLATE utf8_swedish_ci NOT NULL,
@@ -35,26 +74,15 @@ CREATE TABLE IF NOT EXISTS `quest` (
   `first_team_id` int(5) DEFAULT NULL,
   `has_answer_box` tinyint(1) NOT NULL DEFAULT '1',
   `start_time` int(11) DEFAULT NULL,
-  `hint_1_text` varchar(100) COLLATE utf8_swedish_ci DEFAULT NULL,
-  `hint_1_time` int(5) DEFAULT NULL,
-  `hint_2_text` varchar(100) COLLATE utf8_swedish_ci DEFAULT NULL,
-  `hint_2_time` int(5) DEFAULT NULL,
+  `point_standard` int(3) NOT NULL DEFAULT '0',
+  `point_first_extra` int(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci AUTO_INCREMENT=4 ;
-
---
--- Dumping data for table `quest`
---
-
-INSERT INTO `quest` (`id`, `main`, `sub`, `html`, `html_is_php`, `answer`, `first_team_id`, `has_answer_box`, `start_time`, `hint_1_text`, `hint_1_time`, `hint_2_text`, `hint_2_time`) VALUES
-(1, 1, 1, '1-1', 0, '1-1', NULL, 1, NULL, '', 0, '', 0),
-(2, 1, 2, '1-2', 0, '1-2', NULL, 1, NULL, NULL, NULL, NULL, NULL),
-(3, 2, 1, '2-1', 0, '2-1', NULL, 1, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `team`
+-- Tabellstruktur `team`
 --
 
 CREATE TABLE IF NOT EXISTS `team` (
@@ -68,9 +96,3 @@ CREATE TABLE IF NOT EXISTS `team` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci AUTO_INCREMENT=2 ;
 
---
--- Dumping data for table `team`
---
-
-INSERT INTO `team` (`id`, `name`, `password`, `points`, `current_quest_id`, `started_quest`, `last_answered`) VALUES
-(1, 'test', '098f6bcd4621d373cade4e832627b4f6', 0, 0, 0, 0);

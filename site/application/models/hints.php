@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Hint extends CI_Model {
+class Hints extends CI_Model {
 	public function __construct() {
 		parent::__construct();
 	}

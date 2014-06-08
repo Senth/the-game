@@ -35,5 +35,5 @@
 <script type="text/javascript">
 	var $messages = $('#messages');
 	$('h1').after($messages);
-	$('#content').remove($messages);
+	$('#content').remove('#messages');
 </script>

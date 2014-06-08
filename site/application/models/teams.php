@@ -2,7 +2,7 @@
 /**
  * Model interacting with the teams
  */
-class Team extends CI_Model {
+class Teams extends CI_Model {
 	/**
 	 * Constructor, does nothing
 	 */

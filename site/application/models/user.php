@@ -5,13 +5,6 @@
  */
 class User extends CI_Model {
 	/**
-	 * Default constructor
-	 */ 
-	public function __construct() {
-		parent::__construct();
-	}
-
-	/**
 	 * Checks if the user credintials are correct
 	 * @param username
 	 * @param password

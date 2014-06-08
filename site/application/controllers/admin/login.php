@@ -38,7 +38,7 @@ class Login extends GAME_Controller {
 
 		$json_return['success'] = FALSE;
 
-		$this->load->model('user', 'user');
+		$this->load->model('Users', 'user');
 
 		// Check if credentials match
 		$user_id = $this->user->validate(

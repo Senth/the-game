@@ -4,9 +4,9 @@ class Game extends GAME_Controller {
 
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('Team', 'team');
-		$this->load->model('Quest', 'quest');
-		$this->load->model('Hint', 'hint');
+		$this->load->model('Teams', 'team');
+		$this->load->model('Quests', 'quest');
+		$this->load->model('Hints', 'hint');
 		log_message('debug', 'Game loaded successfully!');
 
 		$this->_current_quest_id = $this->team->get_current_quest($this->team_info->get_id());

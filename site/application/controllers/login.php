@@ -29,7 +29,7 @@ class Login extends GAME_Controller {
 	}
 
 	private function _validate_login() {
-		$this->load->model('team', 'team');
+		$this->load->model('Teams', 'team');
 
 		// Check if credentials match
 		$team_id = $this->team->validate(

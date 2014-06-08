@@ -22,7 +22,7 @@ var baseUrl = '<?php echo base_url(); ?>';
 function addArc(arcId, arcName) {
 	var $table = $('#arc_table');
 
-	var html = '<tr><td><a href="' + baseUrl + 'admin/quest/view/' + arcId + '">' + arcName + '</a></td></tr>';
+	var html = '<tr><td><a href="' + baseUrl + 'admin/quest/arc/' + arcId + '">' + arcName + '</a></td></tr>';
 	$table.append(html);
 }
 

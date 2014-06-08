@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Värd: localhost:3306
--- Tid vid skapande: 06 jun 2014 kl 20:04
+-- Tid vid skapande: 08 jun 2014 kl 15:37
 -- Serverversion: 5.5.34
 -- PHP-version: 5.5.10
 
@@ -13,6 +13,8 @@ SET time_zone = "+00:00";
 --
 -- Databas: `game`
 --
+CREATE DATABASE IF NOT EXISTS `game` DEFAULT CHARACTER SET utf8 COLLATE utf8_swedish_ci;
+USE `game`;
 
 -- --------------------------------------------------------
 
@@ -24,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `arc` (
   `id` int(5) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) COLLATE utf8_swedish_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci AUTO_INCREMENT=4 ;
 
 -- --------------------------------------------------------
 
@@ -66,6 +68,7 @@ CREATE TABLE IF NOT EXISTS `hint` (
 CREATE TABLE IF NOT EXISTS `quest` (
   `id` int(5) NOT NULL AUTO_INCREMENT,
   `arc_id` int(5) NOT NULL,
+  `name` varchar(52) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
   `main` int(5) NOT NULL,
   `sub` int(5) NOT NULL,
   `html` text COLLATE utf8_swedish_ci NOT NULL,
@@ -95,4 +98,17 @@ CREATE TABLE IF NOT EXISTS `team` (
   `last_answered` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci AUTO_INCREMENT=2 ;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur `user`
+--
+
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) COLLATE utf8_swedish_ci NOT NULL,
+  `password` varchar(42) COLLATE utf8_swedish_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Currently this table only contains admins' AUTO_INCREMENT=2 ;
 

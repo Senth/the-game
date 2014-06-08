@@ -5,6 +5,20 @@ class Quest extends CI_Model {
 		parent::__construct();
 	}
 
+	/**
+	 * Get all quests of the specified arc
+	 * @param arc_id the arc to get all quests from
+	 * @return all quests of the specified arc
+	 */
+	public function get_all($arc_id) {
+		$this->db->from('quest');
+		$this->db->where('arc_id', $arc_id);
+
+		$query = $this->db->get();
+
+		return $query->result();
+	}
+
 	public function get_quest($id) {
 		$this->db->from('quest');
 		$this->db->where('id', $id);
@@ -23,6 +37,8 @@ class Quest extends CI_Model {
 		$this->db->from('quest');
 		$this->db->where('main', 1);
 		$this->db->where('sub', 1);
+		$this->db->order_by('arc_id', 'desc');
+		$this->db->limit(1);
 		
 		$query = $this->db->get();
 

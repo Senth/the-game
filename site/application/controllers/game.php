@@ -9,12 +9,12 @@ class Game extends GAME_Controller {
 		$this->load->model('Hint', 'hint');
 		log_message('debug', 'Game loaded successfully!');
 
-		$this->_current_quest_id = $this->team->get_current_quest($this->user_info->get_id());
+		$this->_current_quest_id = $this->team->get_current_quest($this->team_info->get_id());
 	}
 
 	public function index() {
 		// Redirect to login page if user is not logged in
-		if (!$this->user_info->is_logged_in()) {
+		if (!$this->team_info->is_logged_in()) {
 			log_message('debug', 'Not logged in, redirecting to login page');
 			redirect('login', 'refresh');
 		}
@@ -41,7 +41,7 @@ class Game extends GAME_Controller {
 			if ($this->_current_quest_id === NULL) {
 				$first_quest = $this->quest->get_first_quest();
 				$this->_current_quest_id = $first_quest;
-				$this->team->set_current_quest($this->user_info->get_id(), $first_quest->id);
+				$this->team->set_current_quest($this->team_info->get_id(), $first_quest->id);
 			}
 		}
 
@@ -79,7 +79,7 @@ class Game extends GAME_Controller {
 		$json_return['success'] = TRUE;
 
 		// Check if hints shall be shown
-		$team = $this->team->get_team($this->user_info->get_id());
+		$team = $this->team->get_team($this->team_info->get_id());
 		$time_since_started = time() - $team->started_quest;
 
 		$hints = $this->hint->get_hints($this->_current_quest_id);
@@ -116,7 +116,7 @@ class Game extends GAME_Controller {
 		$json_return['success'] = FALSE;
 
 
-		$team = $this->team->get_team($this->user_info->get_id());
+		$team = $this->team->get_team($this->team_info->get_id());
 		$json_return['points'] = $team->points;
 
 		$quest = $this->quest->get_quest($this->_current_quest_id);
@@ -127,7 +127,7 @@ class Game extends GAME_Controller {
 		$hint_time = -1;
 		$hint_point_deduction = 0;
 
-		$team = $this->team->get_team($this->user_info->get_id());
+		$team = $this->team->get_team($this->team_info->get_id());
 		$time_since_started = time() - $team->started_quest;
 
 		$hints = $this->hint->get_hints($this->_current_quest_id);
@@ -182,7 +182,7 @@ class Game extends GAME_Controller {
 		$json_return['success'] = FALSE;
 
 		// Check if team can answer (time)
-		$team = $this->team->get_team($this->user_info->get_id());
+		$team = $this->team->get_team($this->team_info->get_id());
 		$time_diff = (time() - $team->last_answered);
 		log_message('debug', 'check for right answer');
 		if ($time_diff < self::ANSWER_DELAY) {
@@ -201,7 +201,7 @@ class Game extends GAME_Controller {
 		} else {
 			add_error_json('Wrong answer please try again in <span class="time_left">20</span> seconds.', $json_return);
 			$json_return['time_left'] = self::ANSWER_DELAY;
-			$this->team->update_last_answered($this->user_info->get_id(), time());
+			$this->team->update_last_answered($this->team_info->get_id(), time());
 		}
 
 		echo json_encode($json_return);
@@ -210,19 +210,19 @@ class Game extends GAME_Controller {
 	private function _goto_next_quest() {
 		// Add points to the team
 		$points = $this->_calculate_points();
-		$this->team->add_points($this->user_info->get_id(), $points);
+		$this->team->add_points($this->team_info->get_id(), $points);
 
 		// Answered first? Set first_team_id then
-		$quest = $this->quest->get_quest($this->user_info->get_id());
+		$quest = $this->quest->get_quest($this->team_info->get_id());
 		if ($quest->first_team_id === NULL) {
-			$this->quest->set_first_team($quest->id, $this->user_info->get_id());
+			$this->quest->set_first_team($quest->id, $this->team_info->get_id());
 		}
 
 		log_message('debug', '_goto_next_quest() - set new quest');
 		// Set new quest
 		$next_quest_id = $this->quest->get_next_quest_id($this->_current_quest_id);
-		$this->team->set_current_quest($this->user_info->get_id(), $next_quest_id);
-		$this->_current_quest_id = $this->team->get_current_quest($this->user_info->get_id());
+		$this->team->set_current_quest($this->team_info->get_id(), $next_quest_id);
+		$this->_current_quest_id = $this->team->get_current_quest($this->team_info->get_id());
 	}
 
 	private function _calculate_points(&$json_return = NULL) {
@@ -234,7 +234,7 @@ class Game extends GAME_Controller {
 		}
 	
 		// Check if hints can be seen, use their points instead then
-		$team = $this->team->get_team($this->user_info->get_id());
+		$team = $this->team->get_team($this->team_info->get_id());
 		$time_since_started = time() - $team->started_quest;
 
 		$hints = $this->hint->get_hints($this->_current_quest_id);

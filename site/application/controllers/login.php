@@ -1,6 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-// TODO extend GAME_Controller instead
 class Login extends GAME_Controller {
 
 	public function __construct() {
@@ -8,8 +7,8 @@ class Login extends GAME_Controller {
 	}
 
 	public function index() {
-		// Redirect to game page if user is logged in.
-		if ($this->user_info->is_logged_in()) {
+		// Redirect to game page if team is logged in.
+		if ($this->team_info->is_logged_in()) {
 			log_message('debug', 'Already logged in, redirecting to game');
 			redirect('game', 'refresh');
 		}
@@ -24,8 +23,8 @@ class Login extends GAME_Controller {
 	}
 
 	public function logout() {
-		$this->user_info->logout();
-		$this->session->set_userdata('user', $this->user_info);
+		$this->team_info->logout();
+		$this->save_session();
 		redirect('login', 'refresh');
 	}
 
@@ -53,12 +52,11 @@ class Login extends GAME_Controller {
 	}
 
 	private function _login($team_id) {
-		log_message('debug', 'Logging in...');
 		$team_data = $this->team->get_team($team_id);
 		assert($team_data !== FALSE);
 		log_message('debug', "Team $team_data->name successfully logged in");
-		$this->user_info->login($team_id, $team_data->name);
-		$this->session->set_userdata('user', $this->user_info);
+		$this->team_info->login($team_id, $team_data->name);
+		$this->save_session();
 
 		// Redirect to game
 		redirect('game');

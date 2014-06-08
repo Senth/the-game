@@ -6,29 +6,58 @@ class GAME_Controller extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 
-		// Initialize the user if it hasn't been created
-		if (!$this->session->userdata('user')) {
-			// Set the user in the session
-			$this->session->set_userdata('user', $this->user_info);
-
-			log_message('debug', 'Successfully loaded the user class.');
+		log_message('debug', 'GAME_Controller::__construct()');
+		// Get session team info
+		$team = $this->session->userdata('team');
+		if ($team !== FALSE) {
+			log_message('debug', 'GAME_Controller::__construct() - Using team session');
+			$this->team_info = $team;
+		} else {
+			log_message('debug', 'GAME_Controller::__construct() - No team session found, creating new team');
+			$this->team_info = new User_info();
 		}
-		// Else make it easier to access the user
-		else {
-			log_message('debug', 'User was already loaded, setting the local user');
-			$this->user_info = & $this->session->userdata('user');
+
+		// Get session user info
+		$user = $this->session->userdata('user');
+		if ($user !== FALSE) {
+			log_message('debug', 'GAME_Controller::__construct() - Using user session');
+			$this->user_info = $user;
+		} else {
+			log_message('debug', 'GAME_Controller::__construct() - No user session found, creating new user');
+			$this->user_info = new User_info();
+		}
+		log_message('debug', 'GAME_Controller::__construct() - end');
+	}
+
+	/**
+	 * Saves session variables if they have been changed
+	 */ 
+	protected function save_session() {
+		log_message('debug', 'GAME_Controller::save_session()');
+		// Set session team data if changed
+		if ($this->team_info->has_changed()) {
+			log_message('debug', 'GAME_Controller::save_session() - team changed');
+			$this->team_info->set_not_changed();
+			$this->session->set_userdata('team', $this->team_info);
+		}
+
+		// Set session user data if changed
+		if ($this->user_info->has_changed()) {
+			log_message('debug', 'GAME_Controller::save_session() - user changed');
+			$this->user_info->set_not_changed();
+			$this->session->set_userdata('user', $this->user_info);
 		}
 	}
 
 	/**
 	 * Loads the specified view with the passed content information
 	 * @param view view to load (as content page)
-	 * @param content information in the content
+	 * @param data information for the content
 	 */ 
-	protected function load_view($view, $content) {
+	protected function load_view($view, $data = NULL) {
 		$inner_content = array(
 			'view' => $view,
-			'data' => $content
+			'data' => $data
 		);
 
 		$view_data = array(
@@ -59,4 +88,6 @@ class GAME_Controller extends CI_Controller {
 	protected function access_denied() {
 			show_error('Access denied! You don\'t have access to this page. Try ' . anchor('login', 'logging in') . '...');	
 	}
+
+	protected $team_info;
 }

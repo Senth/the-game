@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
- * Model interacting with the user table
+ * Model interacting with the teams
  */
 class Team extends CI_Model {
 	/**

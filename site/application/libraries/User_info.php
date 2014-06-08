@@ -8,6 +8,7 @@ class User_info {
 	 * Creates a new empty user
 	 */
 	public function __construct() {
+		$this->m_changed = FALSE;
 		$this->reset();
 		log_message('debug', 'User class loaded successfully!');
 	}
@@ -29,6 +30,7 @@ class User_info {
 		$this->m_id = $user_id;
 		$this->m_name = $user_name;
 		$this->m_logged_in = true;
+		$this->m_changed = TRUE;
 	}
 
 	/**
@@ -56,17 +58,33 @@ class User_info {
 	}
 
 	/**
+	 * Sets the user as not changed
+	 */
+	public function set_not_changed() {
+		$this->m_changed = FALSE;
+	}
+
+	/**
+	 * @return true if the user has been changed
+	 */ 
+	public function has_changed() {
+		return $this->m_changed;
+	}
+
+	/**
 	 * Resets the user information (except the ip)
 	 */
 	private function reset() {
 		$this->m_name = 'Anonymous';
-		$this->m_logged_in = false;
+		$this->m_logged_in = FALSE;
 		$this->m_id = -1;
+		$this->m_changed = TRUE;
 	}
 
 	private $m_name;
 	private $m_logged_in;
 	private $m_id;
+	private $m_changed;
 }
 
 /* End of file User_info.php */

@@ -64,6 +64,11 @@ class Game extends GAME_Controller {
 			$json_return['quest'] = get_object_vars($quest);
 			$json_return['quest']['has_answer_box'] = (bool)$json_return['quest']['has_answer_box'];
 
+			// Fix php code
+			if ((bool) $quest->html_is_php) {
+				$json_return['quest']['html'] = eval($quest->html);
+			}
+
 
 			$json_return['success'] = TRUE;
 			echo json_encode($json_return);
@@ -222,8 +227,10 @@ class Game extends GAME_Controller {
 		$this->team->add_points($this->team_info->get_id(), $points);
 
 		// Answered first? Set first_team_id then
-		$quest = $this->quest->get_quest($this->team_info->get_id());
+		$quest = $this->quest->get_quest($this->_current_quest_id);
+		log_message('debug', 'first_team_id: ' . $quest->first_team_id);
 		if ($quest->first_team_id === NULL) {
+			log_message('debug', 'updating first team id');
 			$this->quest->set_first_team($quest->id, $this->team_info->get_id());
 		}
 

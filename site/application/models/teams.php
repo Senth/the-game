@@ -18,12 +18,16 @@ class Teams extends CI_Model {
 	 * 		user is returned, else false is returned
 	 */ 
 	public function validate($name, $password) {
+		log_message('debug', "name: $name, password: $password");
+		log_message('debug', 'md5-password: ' . md5($password));
 		$this->db->select('id');
 		$this->db->from('team');
 		$this->db->where('name', $name);
 		$this->db->where('password', md5($password));
 
 		$query = $this->db->get();
+
+		log_message('debug', 'rows: ' . $query->num_rows());
 
 		// Return the id
 		if ($query->num_rows() == 1) {

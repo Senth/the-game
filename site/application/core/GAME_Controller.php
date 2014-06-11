@@ -61,7 +61,8 @@ class GAME_Controller extends CI_Controller {
 		);
 
 		$view_data = array(
-			'inner_content' => $inner_content
+			'inner_content' => $inner_content,
+			'team_info' => $this->team_info
 		);
 
 		$this->load->view('template/index', $view_data);

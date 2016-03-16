@@ -49,7 +49,7 @@ function fadeMessage($jqMessage, time) {
 
 	triggerEvent('pageChanged');
 	$jqMessage
-		.delay(time * 1000)
+		.delay(time)
 		.fadeTo(FADE_TIME, FADE_OPACITY)
 		.slideUp(SLIDE_TIME)
 		.queue(function() {

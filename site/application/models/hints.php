@@ -12,15 +12,10 @@ class Hints extends CI_Model {
 
 		$query = $this->db->get();
 
-		$i = 0;
-		$result = null;
-		foreach ($query->result() as $row) {
-			$result[$i]['text'] = $row->text;
-			$result[$i]['time'] = $row->time;
-			$result[$i]['point_deduction'] = $row->point_deduction;
-			$i++;
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		} else {
+			return null;
 		}
-
-		return $result;
 	}
 }

@@ -1,3 +1,5 @@
+<div id="quest_wrapper">
+<div id="quest_info">
 <h1 id="quest_header">Quest Name</h1>
 <div id="quest_form">
 <span class="input_info">Name:</span><input type="text" name="quest_name" id="quest_name"/><br />
@@ -7,19 +9,17 @@
 <span class="input_info">Answer:</span><input type="text" name="answer" id="answer"/><br />
 <span class="input_info">Is php:</span><input type="checkbox" name="is_php" id="is_php"/><br />
 <span class="input_info">Html:</span><br />
-<textarea name="html" id="html" style="width: 40%; height: 20%;"></textarea>
+<textarea name="html" id="html" style="width: 95%; height: 20%;"></textarea>
 </div>
 
 <h1>Hints</h1>
 <table id="hints"></table>
 <h2>New Hint</h2>
-<form method="post" action="<?php echo base_url('admin/hint/add'); ?>">
-<input type="hidden" name="quest_id" value="<?php echo $quest_id; ?>" />
-<span class="input_info">Text:</span><input type="text" name="text" /><br />
-<span class="input_info">Time:</span><input type="text" name="time" /><br />
-<span class="input_info">Points:</span><input type="text" name="points" /><br />
-<input type="submit" value="Add hint" />
-</form>
+<input type="submit" id="add_hint" value="Add Hint" />
+</div>
+<div id="quest_content">
+</div>
+</div>
 
 <script type="text/javascript">
 var baseUrl = '<?php echo base_url(); ?>';
@@ -44,19 +44,33 @@ function getHints() {
 			if (json.success) {
 				$('#hints').children().remove();
 
-				var headers = '<tr><th>Text</th><th>Time</th><th>-Points</th></tr>';
+				var headers = '<tr><th>Text</th><th>Time</th><th>-Points</th><th>Del</th></tr>';
 				$('#hints').append(headers);
 
-				for (var i = 0; i < json.hints.length; ++i) {
-					hint = json.hints[i];
+				if (json.hints !== undefined && json.hints != null) {
+					for (var i = 0; i < json.hints.length; ++i) {
+						hint = json.hints[i];
 
-					var html = '<tr id="hint_id_"' + hint['id'] + '">' +
-						'<td contenteditable="true" id="text">' + hint['text'] + '</td>' +
-						'<td contenteditable="true" id="time">' + hint['time'] + '</td>' +
-						'<td contenteditable="true" id="points">' + hint['point_deduction'] + '</td>' +
-						'</tr>';
+						var html = '<tr>' +
+							'<td contenteditable="true" id="text">' + hint['text'] + '</td>' +
+							'<td contenteditable="true" id="time">' + hint['time'] + '</td>' +
+							'<td contenteditable="true" id="points">' + hint['point_deduction'] + '</td>' +
+							'<td><img class="link" id="delete" src="' + baseUrl + 'assets/image/delete.png" /></td>' +
+							'</tr>';
 
-					$('#hints').append(html);
+						$html = $(html);
+						$html.data('id', hint['id']);
+						$html.find('td').on('blur', function() {
+							updateHint($(this).parent());	
+						});
+						$html.find('#delete').click(function() {
+							$td = $(this).parent();
+							$tr = $td.parent();
+							deleteHint($tr);
+						});
+
+						$('#hints').append($html);
+					}
 				}
 			}
 
@@ -136,12 +150,121 @@ function updateQuest() {
 	$('#quest_header').html($('#quest_name').val());
 }
 
-function updateHtml() {
-	// TODO update the HTML on the side
+function getQuestHtml() {
+	var formData = {
+		ajax: true
+	}
+
+	$.ajax({
+		url: baseUrl + 'admin/quest/get_html/' + questId,
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
+		success: function(json) {
+			if (json === null || json.success === undefined) {
+				addMessage('Return message is null, contact administrator', 'error');
+				return;
+			}
+
+			if (json.success) {
+				$('#quest_content').html(json.html);
+			}
+
+			displayAjaxReturnMessages(json);
+		}
+	});
+}
+
+function addHint() {
+	var formData = {
+		ajax: true,
+		quest_id: questId
+	}
+
+	$.ajax({
+		url: baseUrl + 'admin/hint/add',
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
+		success: function(json) {
+			if (json === null || json.success === undefined) {
+				addMessage('Return message is null, contact administrator', 'error');
+				return;
+			}
+
+			if (json.success) {
+				getHints();
+			}
+
+			displayAjaxReturnMessages(json);
+		}
+	});
+}
+
+function updateHint($hintElement) {
+	id = $hintElement.data('id');
+	text = $hintElement.find('#text').html();
+	time = $hintElement.find('#time').html();
+	points = $hintElement.find('#points').html();
+
+	var formData = {
+		ajax: true,
+		id: id,
+		text: text,
+		time: time,
+		points: points
+	}
+
+	$.ajax({
+		url: baseUrl + 'admin/hint/edit',
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
+		success: function(json) {
+			if (json === null || json.success === undefined) {
+				addMessage('Return message is null, contact administrator', 'error');
+				return;
+			}
+
+			if (json.success) {
+			}
+
+			displayAjaxReturnMessages(json);
+		}
+	});
+}
+
+function deleteHint($hintElement) {
+	id = $hintElement.data('id');
+
+	var formData = {
+		ajax: true,
+		id: id,
+	}
+
+	$.ajax({
+		url: baseUrl + 'admin/hint/remove',
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
+		success: function(json) {
+			if (json === null || json.success === undefined) {
+				addMessage('Return message is null, contact administrator', 'error');
+				return;
+			}
+
+			if (json.success) {
+				$hintElement.remove();
+			}
+
+			displayAjaxReturnMessages(json);
+		}
+	});
 }
 
 $(document).ready(function() {
 	getQuest();
+	getQuestHtml();
 	getHints();
 	
 	
@@ -158,7 +281,11 @@ $(document).ready(function() {
 	});
 
 	$('#html').change(function() {
-		updateHtml();
+		getQuestHtml();
+	});
+
+	$('#add_hint').click(function() {
+		addHint();
 	});
 });
 </script>

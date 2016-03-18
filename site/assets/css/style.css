@@ -17,12 +17,11 @@ body,html {
 }
 
 #logo {
-	position: relative;
 	height: 150px;
 	left: 50%;
-	margin-left: -384px;
 	background-image: url('../image/logo.png');
 	background-repeat: no-repeat;
+	background-position: center;
 }
 
 #content {
@@ -43,6 +42,18 @@ body,html {
 	clear: both;
 }
 
+#quest_info {
+	float: left;
+	width: 45%;
+	overflow: hidden;
+}
+
+#quest_content {
+	float: left;
+	width: 45%;
+	overflow: hidden;
+}
+
 input[type="text"].middle_form, input[type="password"].middle_form {
 	float: right;
 	position: relative;
@@ -56,21 +67,18 @@ input[type="text"].middle_form, input[type="password"].middle_form {
 #middle_form-wrapper {
 	float: left;
 	left: 50%;
-	position: relative;
+	width: 100%;
 	text-align: center;
 }
 
 #game {
-	position: relative;
 	float: left;
-	left: -50%;
+	width: 100%;
 	text-align: center;
 }
 
 #middle_form {
-	position: relative;
 	float: left;
-	left: -50%;
 	text-align: left;
 	background-color: #111111;
 	border: 1px solid #333;
@@ -94,6 +102,10 @@ h2 {
 
 h3 {
 	color: #64B5F6;
+}
+
+.link:hover {
+	cursor: hand;
 }
 
 a, a:visited, a:active, a:link {
@@ -136,14 +148,12 @@ input[type="button"], input[type="submit"], .button:visited, .button:active, .bu
 }
 
 input[type="button"], input[type="submit"]:hover, .button:hover, .button_big:hover {
-/* 	background-color: #89a; */
 	cursor: pointer;
 }
 
 input[type="text"], input[type="password"] {
 	background-color: #fff;
 	border: 1px solid #abc;
-	color: #000;
 	padding: 2px;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
@@ -153,9 +163,35 @@ input[type="text"].big, input[type="password"].big {
 	display: block;
 	font-size: 12px;
 	background-color: #fff;
-	color: #000;
 	border: 5px;
 	padding: 1em;
+}
+
+.progress_text {
+	margin-top: 0px;
+	padding-top: 0px;
+}
+
+.meter {
+	height: 5px;
+	padding: 0px;
+	margin-bottom: 0px;
+	background-color: #607D8B;
+}
+
+.meter > span {
+	display: block;
+	height: 100%;
+	width: 0%;
+	background-color: #00C853;
+}
+
+.orange > span {
+	background-color: #FF6D00;
+}
+
+.red > span {
+	background-color: #D50000;
 }
 
 .input_info {
@@ -179,4 +215,9 @@ input[type="text"].big, input[type="password"].big {
 
 .small {
 	font-size: 8pt;
+}
+
+.info {
+	font-size: 16pt;
+	color: #FFEB3B;
 }

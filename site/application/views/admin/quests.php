@@ -1,4 +1,4 @@
-<h1>Quests</h1>
+<h1><?php echo $arc_name; ?></h1>
 <table id="quest_container"></table>
 <input class="big" type="submit" id="add_quest" value="Add Quest"></h2>
 
@@ -75,7 +75,6 @@ function addQuest() {
 			displayAjaxReturnMessages(json);
 		}
 	});
-
 }
 
 $(document).ready(function() {

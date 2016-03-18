@@ -43,6 +43,46 @@
 			 return;
 		 }
 
-		 // TODO
+		 $this->hint->insert($this->input->post('quest_id'));
+
+		 $json_return['success'] = TRUE;
+		 echo json_encode($json_return);
+	 }
+
+	 /**
+	  * Edit an existing quest
+	  */ 
+	 public function edit() {
+		 // Only handle ajax requests
+		 if ($this->input->post('ajax') === FALSE) {
+			 return;
+		 }
+
+		 $id = $this->input->post('id');
+		 $text = $this->input->post('text');
+		 $time = $this->input->post('time');
+		 $points = $this->input->post('points');
+
+		 $this->hint->update($id, $text, $time, $points);
+
+		 $json_return['success'] = TRUE;
+		 echo json_encode($json_return);
+	 }
+
+	 /**
+	  * Remove a hint
+	  */
+	 public function remove() {
+		 // Only handle ajax requests
+		 if ($this->input->post('ajax') === FALSE) {
+			 return;
+		 }
+
+		 $id = $this->input->post('id');
+
+		 $this->hint->delete($id);
+
+		 $json_return['success'] = TRUE;
+		 echo json_encode($json_return);
 	 }
  }

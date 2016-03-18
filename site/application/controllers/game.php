@@ -13,13 +13,6 @@ class Game extends GAME_Controller {
 	}
 
 	public function index() {
-		// Redirect to login page if user is not logged in
-		if (!$this->team_info->is_logged_in()) {
-			log_message('debug', 'Not logged in, redirecting to login page');
-			redirect('login', 'refresh');
-		}
-		
-		log_message('debug', 'game view');
 		$this->load_view('game', NULL);
 	}
 
@@ -90,8 +83,8 @@ class Game extends GAME_Controller {
 		$hints = $this->hint->get_hints($this->_current_quest_id);
 		$i = 0;
 		foreach ($hints as $hint) {
-			if ($time_since_started >= $hint['time']) {
-				$json_return['hint'][$i] = $hint['text'];
+			if ($time_since_started >= $hint->time) {
+				$json_return['hint'][$i] = $hint->text;
 				$i++;
 			}
 		}
@@ -103,93 +96,35 @@ class Game extends GAME_Controller {
 		$this->load_view('try_html', NULL);
 	}
 
-	public function completed() {
-		// Not completed, redirect
-		if ($this->_current_quest_id !== '0') {
-			redirect('game', 'refresh');
-		}
+	/**
+	 * Checks if the arc has finished
+	 */ 
+	private function _has_arc_ended() {
+		$this->load->model('Arcs', 'arc');
 
-		$this->load_view('completed', NULL);
+		$arc = $this->arc->get_latest();
+		if ($arc !== FALSE) {
+			$endTime = $arc->start_time + $arc->length;
+			return time() >= $endTime;
+		} else {
+			return FALSE;
+		}
 	}
 
-	public function get_sidebar() {
-		// Only handle ajax updates
-		if ($this->input->post('ajax') === FALSE) {
-			return;
-		}
-
-		$json_return['success'] = FALSE;
-
-		if ($this->team_info->is_logged_in()) {
-			$team = $this->team->get_team($this->team_info->get_id());
-			$json_return['points'] = $team->points;
-
-			$quest = $this->quest->get_quest($this->_current_quest_id);
-			$json_return['quest_worth'] = $this->_calculate_points($json_return);
-
-
-			// hints
-			$hint_time = -1;
-			$hint_point_deduction = 0;
-
-			$team = $this->team->get_team($this->team_info->get_id());
-			$time_since_started = time() - $team->started_quest;
-
-			$hints = $this->hint->get_hints($this->_current_quest_id);
-
-			foreach ($hints as $hint) {
-				if ($time_since_started <= $hint['time']) {
-					$hint_time = $hint['time'] - $time_since_started;
-					$hint_point_deduction = $hint['point_deduction'];
-					break;
-				}
-			}
-			if ($hint_time == -1) {
-				$hint_time = 'No hints left';
-			}
-
-			$json_return['hint_next'] = $hint_time;
-			$json_return['hint_next_penalty'] = $hint_point_deduction;
-			log_message('debug', 'Hint penalty: ' . $hint_point_deduction);
+	public function completed() {
+		// Not completed, redirect
+		if ($this->_current_quest_id === '0') {
+			$this->load_view('completed', NULL);
+		} elseif ($this->_has_arc_ended()) {
+			$this->load_view('ended', NULL);
 		} else {
-			$json_return['points'] = 0;
-			$json_return['quest_worth'] = 0;
-			$json_return['hint_next'] = 0;
-			$json_return['hint_next_penalty'] = 0;
-			$json_return['point_default'] = 0;
-			$json_return['point_first'] = 0;
-			$json_return['point_hint_penalty'] = 0;
-
+			redirect('game', 'refresh');
 		}
-
-		// Get team table
-		$teams = $this->team->get_teams();
-
-		// Replace quest with main-sub instead of id
-		$c_teams = count($teams);
-		for ($i = 0; $i < $c_teams; $i++) {
-			if ($teams[$i]['quest'] === NULL) {
-				$teams[$i]['quest'] = 'Not Started';
-			} else if ($teams[$i]['quest'] === '0') {
-				$teams[$i]['quest'] = 'Done!';
-			} else {
-				// Get quest info
-				$quest = $this->quest->get_quest($teams[$i]['quest']);
-				$teams[$i]['quest'] = $quest->main . '-' . $quest->sub;
-				log_message('debug', 'Quest main: ' . $quest->main . ', sub: ' . $quest->sub);
-			}
-		}
-		$json_return['teams'] = $teams;
-		$json_return['c_teams'] = $c_teams;
-
-		$json_return['success'] = TRUE;
-		echo json_encode($json_return);
 	}
 
 	public function try_answer() {
 		// Only handle ajax updates
 		if ($this->input->post('ajax') === FALSE) {
-			echo 'not ajax';
 			return;
 		}
 
@@ -210,8 +145,10 @@ class Game extends GAME_Controller {
 		else if ($this->quest->is_right_answer($this->_current_quest_id, $this->input->post('answer'))) {
 			log_message('debug', 'correct answer');
 			$this->_goto_next_quest();
+			log_message('debug', 'Game::try_answer() - after goto_next_quest()');
 			$json_return['success'] = TRUE;
-			add_success_json('Correct answer! :D', $json_return);
+			set_success_json('Correct answer! :D', $json_return);
+			log_message('debug', 'Game::try_answer() - added json return message');
 		} else {
 			add_error_json('Wrong answer please try again in <span class="time_left">20</span> seconds.', $json_return);
 			$json_return['time_left'] = self::ANSWER_DELAY;
@@ -228,27 +165,20 @@ class Game extends GAME_Controller {
 
 		// Answered first? Set first_team_id then
 		$quest = $this->quest->get_quest($this->_current_quest_id);
-		log_message('debug', 'first_team_id: ' . $quest->first_team_id);
 		if ($quest->first_team_id === NULL) {
-			log_message('debug', 'updating first team id');
 			$this->quest->set_first_team($quest->id, $this->team_info->get_id());
 		}
 
-		log_message('debug', '_goto_next_quest() - set new quest');
 		// Set new quest
 		$next_quest_id = $this->quest->get_next_quest_id($this->_current_quest_id);
 		$this->team->set_current_quest($this->team_info->get_id(), $next_quest_id);
 		$this->_current_quest_id = $this->team->get_current_quest($this->team_info->get_id());
 	}
 
-	private function _calculate_points(&$json_return = NULL) {
+	private function _calculate_points() {
 		$quest = $this->quest->get_quest($this->_current_quest_id);
 		$points = $quest->point_standard;
 
-		if (isset($json_return)) {
-			$json_return['point_default'] = $points;
-		}
-	
 		// Check if hints can be seen, use their points instead then
 		$team = $this->team->get_team($this->team_info->get_id());
 		$time_since_started = time() - $team->started_quest;
@@ -257,15 +187,11 @@ class Game extends GAME_Controller {
 
 		$hint_penalty = 0;
 		foreach ($hints as $hint) {
-			if ($time_since_started >= $hint['time']) {
-				$hint_penalty += $hint['point_deduction'];
+			if ($time_since_started >= $hint->time) {
+				$hint_penalty += $hint->point_deduction;
 			}
 		}
 		$points -= $hint_penalty;
-
-		if (isset($json_return)) {
-			$json_return['point_hint_penalty'] = $hint_penalty;
-		}
 
 		// Are we first?
 		$team_first = 0;
@@ -273,9 +199,6 @@ class Game extends GAME_Controller {
 			$team_first = $quest->point_first_extra;
 		}
 		$points += $team_first;
-		if (isset($json_return)) {
-			$json_return['point_first'] = $team_first;
-		}
 
 		return $points;
 	}

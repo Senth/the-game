@@ -35,6 +35,7 @@ $(document).ready(function() {
 
 	getQuest(true);
 	getHints(true);
+	checkForArcEnded();
 });
 
 var baseUrl = '<?php echo base_url(); ?>';
@@ -59,8 +60,9 @@ $answer_form.submit(function (ev) {
 			}
 			
 			if (json.success) {
-				getQuest();
-				getHints();
+				addMessage('RIGHT ANSWER!', 'success', 100);
+				getQuest(false);
+				getHints(false);
 				$('#messages').children().remove();
 				displayAjaxReturnMessages(json);
 			}
@@ -68,7 +70,7 @@ $answer_form.submit(function (ev) {
 				$timeLeft = $('.time_left')
 				if ($timeLeft.length == 0 || ($timeLeft.length > 0 && $timeLeft.data('time') == 0)) {
 					updateTimeLeft(json.time_left);
-					addMessage(json.error_messages, 'error', json.time_left);
+					addMessage(json.error_messages, 'error', json.time_left * 1000);
 				}
 			}
 
@@ -163,5 +165,40 @@ function getHints($use_timeout) {
 	if ($use_timeout === true) {
 		setTimeout('getHints(true)', 1000);
 	}
+}
+
+function checkForArcEnded() {
+	var formData = {
+		ajax: true
+	}
+
+	$.ajax({
+		url: baseUrl + 'arc/get_arc_time_left',
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
+		success: function(json) {
+			if (json === null || json.success === undefined) {
+				addMessage('Return message is null, contact administrator', 'error');
+				return;
+			}
+
+			if (json.success) {
+				var timeLeft = json.arc_time_left;
+
+				if (timeLeft == 0) {
+					window.location = baseUrl + 'game/completed';
+				} else {
+					var timeout = timeLeft - 10;
+					if (timeout < 10) {
+						timeout = 1;
+					}
+					setTimeout('checkForArcEnded()', timeout * 1000);
+				}
+			}
+
+			displayAjaxReturnMessages(json);
+		}
+	});
 }
 </script>

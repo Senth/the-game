@@ -20,6 +20,58 @@ class Arc extends GAME_Controller {
 	}
 
 	/**
+	 * Reset/Restart the arc
+	 */ 
+	public function reset() {
+		// Only handle ajax requests
+		if ($this->input->post('ajax') === FALSE) {
+			return;
+		}
+
+		$arc_id = $this->input->post('arc_id');
+
+		if ($arc_id !== FALSE) {
+			// Reset arc
+			$this->arc->set_start_time($arc_id, null);
+
+			// Reset quests
+			$this->load->model('Quests', 'quest');
+			$this->quest->reset($arc_id);
+
+			$json_return['success'] = TRUE;
+		} else {
+			$json_return['success'] = FALSE;
+		}
+
+		echo json_encode($json_return);
+	}
+
+	/**
+	 * Start an arc
+	 */ 
+	public function start_arc() {
+		log_message('debug', 'arc::start_arc()');
+		// Only handle ajax requests
+		if ($this->input->post('ajax') === FALSE) {
+			return;
+		}
+
+		$arc_id = $this->input->post('arc_id');
+		log_message('debug', 'arc::start_arc() - here');
+
+		if ($arc_id != NULL) {
+			$this->arc->set_start_time($arc_id, time());
+			log_message('debug', 'arc::start_arc() - update success');
+			$json_return['success'] = TRUE;
+		} else {
+			log_message('debug', 'arc::start_arc() - no arc id');
+			$json_return['success'] = FALSE;
+		}
+
+		echo json_encode($json_return);
+	}
+
+	/**
 	 * Get all arcs
 	 */
 	public function get_arcs() {

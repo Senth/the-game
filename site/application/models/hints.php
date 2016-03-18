@@ -18,4 +18,22 @@ class Hints extends CI_Model {
 			return null;
 		}
 	}
+
+	public function insert($quest_id) {
+		$this->db->set('quest_id', $quest_id);
+		$this->db->insert('hint');
+	}
+
+	public function update($id, $text, $time, $points) {
+		$this->db->set('text', $text);
+		$this->db->set('time', $time);
+		$this->db->set('point_deduction', $points);
+		$this->db->where('id', $id);
+		$this->db->update('hint');
+	}
+
+	public function delete($id) {
+		$this->db->where('id', $id);
+		$this->db->delete('hint');
+	}
 }

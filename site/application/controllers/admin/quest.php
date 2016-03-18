@@ -18,6 +18,13 @@ class Quest extends GAME_Controller {
 	 * @param arc_id
 	 */ 
 	public function arc($arc_id) {
+		$this->load->model('Arcs', 'arc');
+
+		$arc = $this->arc->get($arc_id);
+		if ($arc !== FALSE) {
+			$data['arc_name'] = $arc->name;
+		}
+
 		$data['arc_id'] = $arc_id;
 		$this->load_view('admin/quests', $data);
 	}
@@ -46,6 +53,37 @@ class Quest extends GAME_Controller {
 		if ($quest !== FALSE) {
 			$json_return['success'] = TRUE;
 			$json_return['quest'] = $quest;
+		} else {
+			$json_return['success'] = FALSE;
+		}
+
+		echo json_encode($json_return);
+	}
+
+	/**
+	 * Get quest HTML
+	 * @param quest_id 
+	 */ 
+	public function get_html($quest_id) {
+		// Only handle ajax requests
+		if ($this->input->post('ajax') === FALSE) {
+			return;
+		}
+
+		$quest = $this->quest->get_quest($quest_id);
+
+		if ($quest !== FALSE) {
+			$html = $quest->html;
+			$is_php = (bool) $quest->html_is_php;
+
+			// Fix php code
+			if ($is_php) {
+				$json_return['html'] = eval($html);
+			} else {
+				$json_return['html'] = $html;
+			}
+
+			$json_return['success'] = TRUE;
 		} else {
 			$json_return['success'] = FALSE;
 		}
@@ -113,7 +151,7 @@ class Quest extends GAME_Controller {
 		$sub = $this->input->post('sub');
 		$html = $this->input->post('html');
 		$is_php = $this->input->post('is_php') == 'true' ? TRUE : FALSE;
-		$answer = $this->input->post('answer');
+		$answer = strtolower($this->input->post('answer'));
 		$points = $this->input->post('points');
 		$points_first = $this->input->post('points_first');
 

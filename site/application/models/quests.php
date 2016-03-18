@@ -147,9 +147,25 @@ class Quests extends CI_Model {
 		$this->db->update('quest');
 	}
 
+	/**
+	 * Reset all quests with the specified arc id
+	 * @param arc_id
+	 */ 
+	public function reset($arc_id) {
+		$this->db->set('first_team_id', null);
+		$this->db->set('start_time', null);
+		$this->db->where('arc_id', $arc_id);
+		$this->db->update('quest');
+	}
+
 	public function insert($arc_id) {
 		$this->db->set('arc_id', $arc_id);
 		$this->db->set('html', '');
 		$this->db->insert('quest');
+	}
+
+	public function delete($id) {
+		$this->db->where('id', $id);
+		$this->db->delete('quest');
 	}
 }

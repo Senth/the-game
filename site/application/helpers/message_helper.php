@@ -94,6 +94,20 @@ function set_success($message) {
 }
 
 /**
+ * Adds an error, not to the session, but to the json return array supplied.
+ * @param message message to display
+ * @param json the json return array (used in ajax)
+ */ 
+function add_success_json($message, &$json) {
+	$succes_message = '<p class="success">' . $message . "</p>\n";
+	if (isset($json['success_messages'])) {
+		$json['success_messages'] .= $success_message;
+	} else {
+		$json['success_messages'] = $success_message;
+	}
+}
+
+/**
  * Sets a success message for json return, when using ajax
  * @param message the success message to be set
  * @param json json return array used in ajax calls

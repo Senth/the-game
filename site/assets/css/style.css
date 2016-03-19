@@ -31,6 +31,37 @@ body,html {
 	border-right: 1px solid #555555;
 }
 
+#middle_form-wrapper {
+	width: 50%;
+	margin-left: 50%;
+	text-align: center;
+}
+
+#middle_form {
+	margin-left: -100px;
+	width: 200px;
+	background-color: #111111;
+	border: 1px solid #333;
+	padding: 1em 2em 1em 2em;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+input[type="text"].middle_form, input[type="password"].middle_form {
+	position: relative;
+	min-width: 200px;
+	width: 100%;
+	margin: 0px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+#game {
+	float: left;
+	width: 100%;
+	text-align: center;
+}
+
 #sidebar {
 	position: relative;
 	float: right;
@@ -52,39 +83,6 @@ body,html {
 	float: left;
 	width: 45%;
 	overflow: hidden;
-}
-
-input[type="text"].middle_form, input[type="password"].middle_form {
-	float: right;
-	position: relative;
-	min-width: 200px;
-	width: 100%;
-	margin: 0px;
-	margin-top: 5px;
-	margin-bottom: 5px;
-}
-
-#middle_form-wrapper {
-	float: left;
-	left: 50%;
-	width: 100%;
-	text-align: center;
-}
-
-#game {
-	float: left;
-	width: 100%;
-	text-align: center;
-}
-
-#middle_form {
-	float: left;
-	text-align: left;
-	background-color: #111111;
-	border: 1px solid #333;
-	padding: 1em 2em 1em 2em;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
 }
 
 #answer_box {
@@ -160,7 +158,6 @@ input[type="text"], input[type="password"] {
 }
 
 input[type="text"].big, input[type="password"].big {
-	display: block;
 	font-size: 12px;
 	background-color: #fff;
 	border: 5px;

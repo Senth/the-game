@@ -1,4 +1,3 @@
-<div id="middle_form-wrapper">
 <div id="game">
 <div id="quest"></div>
 <div id="hints"></div>
@@ -20,7 +19,6 @@
 
 	echo '</div>';
 ?>
-</div>
 </div>
 <script type="text/javascript">
 var $messages = $('#messages');

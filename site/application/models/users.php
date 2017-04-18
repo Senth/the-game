@@ -3,7 +3,7 @@
 /**
  * Model interacting with users
  */
-class User extends CI_Model {
+class Users extends CI_Model {
 	/**
 	 * Checks if the user credintials are correct
 	 * @param username

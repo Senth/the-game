@@ -13,43 +13,41 @@ body,html {
 #header {
 	padding-top: 35px;
 	border-bottom: 1px solid #555555;
-/* 	background-color: #005500; */
 	margin: 0px;
 }
 
 #logo {
-	position: relative;
 	height: 150px;
 	left: 50%;
-	margin-left: -384px;
 	background-image: url('../image/logo.png');
 	background-repeat: no-repeat;
+	background-position: center;
 }
 
 #content {
 	padding: 20px;
 	min-height: 600px;
 	overflow: auto;
-/* 	background-color: #550000; */
 	border-right: 1px solid #555555;
 }
 
-#sidebar {
-	position: relative;
-	float: right;
-	width: 260px;
-	padding: 20px;
-/* 	margin-bottom: -5000px; */
-/* 	padding-bottom: 5000px; */
-/* 	background-color: #000055; */
+#middle_form-wrapper {
+	width: 50%;
+	margin-left: 50%;
+	text-align: center;
 }
 
-#footer {
-	clear: both;
+#middle_form {
+	margin-left: -100px;
+	width: 200px;
+	background-color: #111111;
+	border: 1px solid #333;
+	padding: 1em 2em 1em 2em;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 input[type="text"].middle_form, input[type="password"].middle_form {
-	float: right;
 	position: relative;
 	min-width: 200px;
 	width: 100%;
@@ -58,30 +56,33 @@ input[type="text"].middle_form, input[type="password"].middle_form {
 	margin-bottom: 5px;
 }
 
-#middle_form-wrapper {
-	float: left;
-	left: 50%;
-	position: relative;
-	text-align: center;
-}
-
 #game {
-	position: relative;
 	float: left;
-	left: -50%;
+	width: 100%;
 	text-align: center;
 }
 
-#middle_form {
+#sidebar {
 	position: relative;
+	float: right;
+	width: 260px;
+	padding: 20px;
+}
+
+#footer {
+	clear: both;
+}
+
+#quest_info {
 	float: left;
-	left: -50%;
-	text-align: left;
-	background-color: #111111;
-	border: 1px solid #333;
-	padding: 1em 2em 1em 2em;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
+	width: 45%;
+	overflow: hidden;
+}
+
+#quest_content {
+	float: left;
+	width: 45%;
+	overflow: hidden;
 }
 
 #answer_box {
@@ -89,45 +90,62 @@ input[type="text"].middle_form, input[type="password"].middle_form {
 }
 
 h1 {
-	color: #777;
+	color: #2196F3;
 	margin-bottom: 15px;
-	text-shadow: 1px 1px 0 white;
 }
 
-input[type="submit"].big, .button_big:visited, .button_big:active, .button_big:link {
+h2 {
+	color: #42A5F5;
+}
+
+h3 {
+	color: #64B5F6;
+}
+
+.link:hover {
+	cursor: hand;
+}
+
+a, a:visited, a:active, a:link {
+	text-decoration: none;
+	color: #29B6F6;
+}
+
+a:hover {
+	color: #81D4FA;
+}
+
+td, th {
+	padding: 0.2em 1em 0.2em 1em;
+	margin: 0px;
+}
+
+th {
+	text-align: left;
+	color: #BBDEFB;
+}
+
+tr {
+	margin: 0px;
+}
+
+tr:hover {
+	background-color: #263238;
+}
+
+input[type="button"], input[type="submit"].big, .button_big:visited, .button_big:active, .button_big:link {
 	margin: 2px;
-/* 	border: none; */
 	padding: 8px;
 	font-size: 12px;
-/* 	font-family: Arial; */
-/* 	text-decoration: none; */
-/* 	-moz-border-radius: 4px; */
-/* 	-webkit-border-radius: 4px; */
-/* 	background-color: #9ab; */
-/* 	color: #fff; */
-/* 	box-shadow: 0 1px 0 white; */
-/* 	-moz-box-shadow: 0 1px 0 white; */
-/* 	-webkit-box-shadow: 0 1px 0 white; */
 }
 
-input[type="submit"], .button:visited, .button:active, .button:link {
+input[type="button"], input[type="submit"], .button:visited, .button:active, .button:link {
 	margin: 2px;
-/* 	border: none; */
 	padding: 4px;
 	font-size: 12px;
-/* 	font-family: Arial; */
-/* 	text-decoration: none; */
-/* 	-moz-border-radius: 4px; */
-/* 	-webkit-border-radius: 4px; */
-/* 	background-color: #9ab; */
-/* 	color: #fff; */
-/* 	box-shadow: 0 1px 0 white; */
-/* 	-moz-box-shadow: 0 1px 0 white; */
-/* 	-webkit-box-shadow: 0 1px 0 white; */
 }
 
-input[type="submit"]:hover, .button:hover, .button_big:hover {
-/* 	background-color: #89a; */
+input[type="button"], input[type="submit"]:hover, .button:hover, .button_big:hover {
 	cursor: pointer;
 }
 
@@ -140,20 +158,52 @@ input[type="text"], input[type="password"] {
 }
 
 input[type="text"].big, input[type="password"].big {
-	display: block;
 	font-size: 12px;
 	background-color: #fff;
 	border: 5px;
 	padding: 1em;
 }
 
+.progress_text {
+	margin-top: 0px;
+	padding-top: 0px;
+}
+
+.meter {
+	height: 5px;
+	padding: 0px;
+	margin-bottom: 0px;
+	background-color: #607D8B;
+}
+
+.meter > span {
+	display: block;
+	height: 100%;
+	width: 0%;
+	background-color: #00C853;
+}
+
+.orange > span {
+	background-color: #FF6D00;
+}
+
+.red > span {
+	background-color: #D50000;
+}
+
+.input_info {
+	display: inline-block;
+	width: 150px;
+	margin-bottom: 0.4em;
+}
+
 .error {
-	color: #a22;
+	color: #F44336;
 }
 
 .success {
 /* 	font-size: 12pt; */
-	color: #293;
+	color: #4CAF50;
 }
 
 .form_default {
@@ -162,4 +212,9 @@ input[type="text"].big, input[type="password"].big {
 
 .small {
 	font-size: 8pt;
+}
+
+.info {
+	font-size: 16pt;
+	color: #FFEB3B;
 }

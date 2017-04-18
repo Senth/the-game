@@ -1,5 +1,6 @@
 <h1>Arcs</h1>
 <table id="arc_table">
+<tr><th>Name</th><th>Length</th><th>Start</th><th>Reset</th></tr>
 </table>
 
 <h2>Create Arc</h2>
@@ -19,11 +20,91 @@
 <script type="text/javascript">
 var baseUrl = '<?php echo base_url(); ?>';
 
-function addArc(arcId, arcName) {
-	var $table = $('#arc_table');
+String.prototype.toHHMMSS = function () {
+    var sec_num = parseInt(this, 10); // don't forget the second param
+    var hours   = Math.floor(sec_num / 3600);
+    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+    var seconds = sec_num - (hours * 3600) - (minutes * 60);
 
-	var html = '<tr><td><a href="' + baseUrl + 'admin/quest/arc/' + arcId + '">' + arcName + '</a></td></tr>';
-	$table.append(html);
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+    var time    = hours+':'+minutes+':'+seconds;
+    return time;
+}
+
+function addArc(id, name, length, started) {
+	var html = '<tr id="arc_id_' + id + '">' + 
+		'<td><a href="' + baseUrl + 'admin/quest/arc/' + id + '">' + name + '</a></td>' +
+		'<td>' + length.toHHMMSS() + '</td>' +
+		'<td style="text-align: center;" id="start">';
+
+	if (started) {
+		html += 'started';
+	} else {
+		html += '<img class="link" id="start_arc" src="' + baseUrl + 'assets/image/alarm.png" />';
+	}
+
+	html += '</td>' +
+		'<td style="text-align: center;"><img class="link" id="reset_arc" src="' + baseUrl + 'assets/image/restore.png" /></td>' + 
+		'</tr>';
+	$arc = $(html);
+	$table = $('#arc_table');
+	$table.append($arc);
+
+	if (!started) {
+		$arc.find('#start_arc').click(function() {
+			var formData = {
+				ajax: true,
+				arc_id: id
+			}
+
+			$.ajax({
+				url: baseUrl + 'admin/arc/start_arc',
+				type: 'POST',
+				data: formData,
+				dataType: 'json',
+				success: function(json) {
+					if (json === null || json.success === undefined) {
+						addMessage('Return message is null, contact administrator', 'error');
+						return;
+					}
+
+					if (json.success) {
+						$('#arc_id_' + id).find('#start').html('started');
+					}
+
+					displayAjaxReturnMessages(json);
+				}
+			});
+		});
+	}
+
+	$arc.find('#reset_arc').click(function() {
+		var formData = {
+			ajax: true,
+			arc_id: id
+		}
+
+		$.ajax({
+			url: baseUrl + 'admin/arc/reset',
+			type: 'POST',
+			data: formData,
+			dataType: 'json',
+			success: function(json) {
+				if (json === null || json.success === undefined) {
+					addMessage('Return message is null, contact administrator', 'error');
+					return;
+				}
+
+				if (json.success) {
+					getAndAddArcs();
+				}
+
+				displayAjaxReturnMessages(json);
+			}
+		});
+	});
 }
 
 $(document).ready(function() {
@@ -46,8 +127,10 @@ function getAndAddArcs() {
 				return;
 			}
 
+			$('#arc_table').find('tr:not(:first)').remove();
 			for (var i = 0; i < json.arcs.length; ++i) {
-				addArc(json.arcs[i].id, json.arcs[i].name);
+				var arc = json.arcs[i];
+				addArc(arc.id, arc.name, arc.length, arc.start_time != null);
 			}
 
 			displayAjaxReturnMessages(json);

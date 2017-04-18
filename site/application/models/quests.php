@@ -11,12 +11,20 @@ class Quests extends CI_Model {
 	 * @return all quests of the specified arc
 	 */
 	public function get_all($arc_id) {
+		log_message('debug', 'quests.get_all(' . $arc_id . ')');
+
 		$this->db->from('quest');
 		$this->db->where('arc_id', $arc_id);
+		$this->db->order_by('main', 'asc');
+		$this->db->order_by('sub', 'asc');
 
 		$query = $this->db->get();
 
-		return $query->result();
+		if ($query->num_rows() > 0) {
+			return $query->result();
+		} else {
+			return FALSE;
+		}
 	}
 
 	public function get_quest($id) {
@@ -123,5 +131,41 @@ class Quests extends CI_Model {
 		$this->db->set('first_team_id', $team_id);
 		$this->db->where('id', $quest_id);
 		$this->db->update('quest');
+	}
+
+	public function update($id, $name, $main, $sub, $html, $is_php, $answer, $points, $points_first) {
+		$this->db->set('name', $name);
+		$this->db->set('main', $main);
+		$this->db->set('sub', $sub);
+		log_message('debug', 'HTML: ' . $html);
+		$this->db->set('html', $html);
+		$this->db->set('html_is_php', $is_php ? 1 : 0);
+		$this->db->set('answer', $answer);
+		$this->db->set('point_standard', $points);
+		$this->db->set('point_first_extra', $points_first);
+		$this->db->where('id', $id);
+		$this->db->update('quest');
+	}
+
+	/**
+	 * Reset all quests with the specified arc id
+	 * @param arc_id
+	 */ 
+	public function reset($arc_id) {
+		$this->db->set('first_team_id', null);
+		$this->db->set('start_time', null);
+		$this->db->where('arc_id', $arc_id);
+		$this->db->update('quest');
+	}
+
+	public function insert($arc_id) {
+		$this->db->set('arc_id', $arc_id);
+		$this->db->set('html', '');
+		$this->db->insert('quest');
+	}
+
+	public function delete($id) {
+		$this->db->where('id', $id);
+		$this->db->delete('quest');
 	}
 }

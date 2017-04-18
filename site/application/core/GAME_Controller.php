@@ -27,6 +27,8 @@ class GAME_Controller extends CI_Controller {
 			$this->user_info = new User_info();
 		}
 		log_message('debug', 'GAME_Controller::__construct() - end');
+
+		$this->_validate_access();
 	}
 
 	/**
@@ -62,32 +64,52 @@ class GAME_Controller extends CI_Controller {
 
 		$view_data = array(
 			'inner_content' => $inner_content,
-			'team_info' => $this->team_info
+			'team_info' => $this->team_info,
+			'user_info' => $this->user_info
 		);
 
 		$this->load->view('template/index', $view_data);
 	}
 
 	/**
-	 * Validates the user access to the page. If the user doesn't have access
-	 * an error page is displayed (the same as is called in #access_denied()).
-	 * @param group_name the minimum required access level, should be a
-	 * 	name and not the actual value.
+	 * Validate if the user/team has access to the current page
 	 */
-	protected function validate_access($group_name) {
-// 		$this->load->model('User', 'user');
-// 		$level_required = $this->user->get_level_from_group($group_name);
-// 
-// 		if ($this->user_info->get_level() < $level_required) {
-// 			$this->access_denied();
-// 		}
-	}
+	protected function _validate_access() {
+		$uri = uri_string();
 
-	/**
-	 * Prints an access denied error
-	 */
-	protected function access_denied() {
-			show_error('Access denied! You don\'t have access to this page. Try ' . anchor('login', 'logging in') . '...');	
+		if ($uri == '') {
+			$uri = 'game';
+		}
+
+		$validation_method_needed = FALSE;
+
+		$patterns = array(
+			'/game/' => 'team',
+			'/admin\/.*/' => 'user'
+		);
+
+		foreach ($patterns as $pattern => $validation_method) {
+			$success = preg_match($pattern, $uri);
+
+			if ($success !== FALSE && $success == 1) {
+				$validation_method_needed = $validation_method;
+			}
+		}
+
+		if ($validation_method_needed !== FALSE) {
+			$redirect = FALSE;
+
+			if ($validation_method_needed == 'team' && !$this->team_info->is_logged_in()) {
+				$redirect = TRUE;
+			} elseif ($validation_method_needed == 'user' && !$this->user_info->is_logged_in()) {
+				$redirect = TRUE;
+			}
+
+
+			if ($redirect) {
+				redirect('login', 'refresh');
+			}
+		}
 	}
 
 	protected $team_info;

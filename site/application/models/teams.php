@@ -18,10 +18,9 @@ class Teams extends CI_Model {
 	 * 		user is returned, else false is returned
 	 */ 
 	public function validate($name, $password) {
-		log_message('debug', "name: $name, password: $password");
-		log_message('debug', 'md5-password: ' . md5($password));
 		$this->db->select('id');
 		$this->db->from('team');
+		$this->db->where('active', 1);
 		$this->db->where('name', $name);
 		$this->db->where('password', md5($password));
 
@@ -38,8 +37,8 @@ class Teams extends CI_Model {
 	}
 
 	/**
-	 * Returns an array with all the user information
-	 * @param id the user's id to fetch information about
+	 * Returns an array with all the team information
+	 * @param id the team's id to fetch information about
 	 * @return array with all the user information, false if the user doesn't exist.
 	 */
 	public function get_team($id) {
@@ -58,9 +57,11 @@ class Teams extends CI_Model {
 
 	public function get_teams() {
 		$this->db->from('team');
+		$this->db->where('active', 1);
 		$query = $this->db->get();
 
 		$i = 0;
+		$teams = array();
 		foreach($query->result() as $row) {
 			$teams[$i]['name'] = $row->name;
 			$teams[$i]['points'] = $row->points;

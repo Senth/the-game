@@ -48,7 +48,7 @@ class Login extends GAME_Controller {
 
 		// Did not match, post error and show login
 		if ($user_id === FALSE) {
-			add_error_json('There is no team with that password.', $json_return);
+			add_error_json('There is no admin with that password.', $json_return);
 		} else {
 			$this->_login($user_id);
 			$json_return['success'] = TRUE;

@@ -39,6 +39,7 @@ class Arc extends GAME_Controller {
 		if ($arc !== FALSE) {
 			$endTime = $arc->start_time + $arc->length;
 			$json_return['arc_time_left'] = max(0, $endTime - time());
+			$json_return['arc_started'] = $arc->start_time !== NULL;
 			$json_return['success'] = TRUE;
 		} else {
 			$json_return['success'] = FALSE;

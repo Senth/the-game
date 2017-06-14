@@ -107,7 +107,7 @@ function getQuest() {
 				} else {
 					$('#is_php').prop('checked', false);
 				}
-				$('#html').html(json.quest['html']);
+				$('#html').val(json.quest['html']);
 			}
 
 			displayAjaxReturnMessages(json);

@@ -22,7 +22,17 @@ class Game extends GAME_Controller {
 			return;
 		}
 
+		log_message('debug', 'Getting quest');
+
 		$json_return['success'] = FALSE;
+
+		// Return early if quest hasn't started yet
+		if (!$this->_has_arc_started()) {
+			$json_return['started'] = FALSE;
+			log_message('debug', 'Arc hasn\'t started');
+			echo json_encode($json_return);
+			return;
+		}
 
 
 		// Update current quest
@@ -56,18 +66,44 @@ class Game extends GAME_Controller {
 			// Convert from object to array
 			$json_return['quest'] = get_object_vars($quest);
 			$json_return['quest']['has_answer_box'] = (bool)$json_return['quest']['has_answer_box'];
-
-			// Fix php code
-			if ((bool) $quest->html_is_php) {
-				$json_return['quest']['html'] = eval($quest->html);
-			}
-
+			$json_return['quest']['html'] = $this->_get_correct_html($quest);
 
 			$json_return['success'] = TRUE;
 			echo json_encode($json_return);
 		}		
 	}
+	
+	/**
+	 * Fix all shortcode links
+	 * @param quest the quest
+	 * @return fixed all shortcodes
+	 */
+	private function _get_correct_html($quest) {
+		$LINK_REGEX = '/\[(.+?)\]\((.+?)\)/';
+		$IMG_REGEX = '/!\((.+?)\)/';
+		
+		$html = $quest->html;
+		$is_php = (bool) $quest->html_is_php;
 
+		// Fix php code
+		if ($is_php) {
+			$html = eval($html);
+		}
+		$arc_id = $quest->arc_id;
+
+		// Replace links
+		$replace_url = base_url('assets/game/' . $arc_id . '/$2');
+		$link_replacement = '<a href="' . $replace_url . '">$1</a>';
+		$html = preg_replace($LINK_REGEX, $link_replacement, $html);
+
+		// Replace images
+		$replace_url = base_url('assets/game/' . $arc_id . '/$1');
+		$img_replacement = '<img style="width: 80%;" src="' . $replace_url . '"/>';
+		$html = preg_replace($IMG_REGEX, $img_replacement, $html);
+
+		return $html;
+	}
+	
 	public function get_hints() {
 		// Only handle ajax updates
 		if ($this->input->post('ajax') === FALSE) {
@@ -80,12 +116,14 @@ class Game extends GAME_Controller {
 		$team = $this->team->get_team($this->team_info->get_id());
 		$time_since_started = time() - $team->started_quest;
 
-		$hints = $this->hint->get_hints($this->_current_quest_id);
-		$i = 0;
-		foreach ($hints as $hint) {
-			if ($time_since_started >= $hint->time) {
-				$json_return['hint'][$i] = $hint->text;
-				$i++;
+		if ($this->_current_quest_id !== NULL) {
+			$hints = $this->hint->get_hints($this->_current_quest_id);
+			$i = 0;
+			foreach ($hints as $hint) {
+				if ($time_since_started >= $hint->time) {
+					$json_return['hint'][$i] = $hint->text;
+					$i++;
+				}
 			}
 		}
 
@@ -94,6 +132,20 @@ class Game extends GAME_Controller {
 
 	public function try_html() {
 		$this->load_view('try_html', NULL);
+	}
+
+	/**
+	 * Checks if the arc has started
+	 */
+	private function _has_arc_started() {
+		$this->load->model('Arcs', 'arc');
+
+		$arc = $this->arc->get_latest();
+		if ($arc !== FALSE) {
+			return $arc->start_time !== NULL;
+		} else {
+			return FALSE;
+		}
 	}
 
 	/**
@@ -203,6 +255,6 @@ class Game extends GAME_Controller {
 		return $points;
 	}
 
-	private $_current_quest_id;
+	private $_current_quest_id = NULL;
 	const ANSWER_DELAY = 20;
 }

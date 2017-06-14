@@ -106,21 +106,27 @@ function getQuest($use_timeout) {
 				return;
 			}
 			
+			// Completed			
 			if (json.completed == true) {
 				window.location = baseUrl + 'game/completed';
-			} else {
-				// New quest?
-				if (json.quest['id'] != $('#quest').data('id')) {
-					$('#quest').html('');
-					$('#hints').children().remove();
+			}
+			// Not Started
+			else if (json.started == false) {
+				$('#quest').html('<h1>The game has not started yet...</h1>');
+				$('#answer').hide();
+			}
+			// New Quest
+			else if (json.quest['id'] != $('#quest').data('id')) {
+				$('#answer').show();
+				$('#quest').html('');
+				$('#hints').children().remove();
 
-					$('#quest').append('<h1>Quest ' + json.quest['main'] + '–' + json.quest['sub'] + '</h1>');
-					$('#quest').append(json.quest['html']);
-					$('#quest').append('<div id="hints"></div>');
+				$('#quest').append('<h1>Quest ' + json.quest['main'] + '–' + json.quest['sub'] + '</h1>');
+				$('#quest').append(json.quest['html']);
+				$('#quest').append('<div id="hints"></div>');
 
-					$('#hints').data('count', 0);
-					$('#quest').data('id', json.quest['id']);
-				}
+				$('#hints').data('count', 0);
+				$('#quest').data('id', json.quest['id']);
 			}
 		}
 	});
@@ -185,7 +191,12 @@ function checkForArcEnded() {
 				var timeLeft = json.arc_time_left;
 
 				if (timeLeft == 0) {
-					window.location = baseUrl + 'game/completed';
+					if (json.arc_started) {
+						window.location = baseUrl + 'game/completed';
+					} else {
+						$('#quest').html('<h1>The game has not started yet...</h1>');
+						$('#answer').hide();
+					}
 				} else {
 					var timeout = timeLeft - 10;
 					if (timeout < 10) {

@@ -21,44 +21,62 @@ class Sidebar extends GAME_Controller {
 			return;
 		}
 
+
 		$json_return['success'] = FALSE;
 
 		if ($this->team_info->is_logged_in()) {
-			log_message('debug', 'Sidebar::get_info() - team logged in');
+			if ($this->_current_quest_id === NULL) {
+				log_message('debug', 'Getting new quest id');
+				$this->_current_quest_id = $this->team->get_current_quest($this->team_info->get_id());
+			}
+			log_message('debug', 'Quest id: ' . $this->_current_quest_id);
 
-			$team = $this->team->get_team($this->team_info->get_id());
-			$json_return['points'] = $team->points;
+			if ($this->_current_quest_id !== NULL) {
+				log_message('debug', 'Sidebar::get_info() - team logged in');
 
-			$quest = $this->quest->get_quest($this->_current_quest_id);
-			log_message('debug', 'Sidebar::get_info() - before calculate points');
-			$json_return['quest_worth'] = $this->_calculate_points($json_return);
+				$team = $this->team->get_team($this->team_info->get_id());
+				$json_return['points'] = $team->points;
 
-			// Completed
-			$this->_calculate_completed($quest->arc_id, $json_return);
+				$quest = $this->quest->get_quest($this->_current_quest_id);
+				log_message('debug', 'Sidebar::get_info() - before calculate points');
+				$json_return['quest_worth'] = $this->_calculate_points($json_return);
 
-			// hints
-			$hint_time = -1;
-			$hint_point_deduction = 0;
+				// Completed
+				$this->_calculate_completed($quest->arc_id, $json_return);
 
-			$team = $this->team->get_team($this->team_info->get_id());
-			$time_since_started = time() - $team->started_quest;
+				// hints
+				$hint_time = -1;
+				$hint_point_deduction = 0;
 
-			$hints = $this->hint->get_hints($this->_current_quest_id);
+				$team = $this->team->get_team($this->team_info->get_id());
+				$time_since_started = time() - $team->started_quest;
 
-			foreach ($hints as $hint) {
-				if ($time_since_started <= $hint->time) {
-					$hint_time = $hint->time - $time_since_started;
-					$hint_point_deduction = $hint->point_deduction;
-					break;
+				$hints = $this->hint->get_hints($this->_current_quest_id);
+				foreach ($hints as $hint) {
+					if ($time_since_started <= $hint->time) {
+						$hint_time = $hint->time - $time_since_started;
+						$hint_point_deduction = $hint->point_deduction;
+						break;
+					}
 				}
-			}
-			if ($hint_time == -1) {
-				$hint_time = 'No hints left';
-			}
+				if ($hint_time == -1) {
+					$hint_time = 'No hints left';
+				}
 
-			$json_return['hint_next'] = $hint_time;
-			$json_return['hint_next_penalty'] = $hint_point_deduction;
-			log_message('debug', 'Sidebare::get_info() - Hint penalty: ' . $hint_point_deduction);
+				$json_return['hint_next'] = $hint_time;
+				$json_return['hint_next_penalty'] = $hint_point_deduction;
+				log_message('debug', 'Sidebar::get_info() - Hint penalty: ' . $hint_point_deduction);
+			} else {
+				$json_return['points'] = 0;
+				$json_return['quest_worth'] = 0;
+				$json_return['point_default'] = 0;
+				$json_return['point_first'] = 0;
+				$json_return['quests_completed'] = 0;
+				$json_return['quests_total'] = '??';
+				$json_return['hint_next'] = 0;
+				$json_return['hint_next_penalty'] = 0;
+				$json_return['point_hint_penalty'] = 0;
+			}
 		}
 
 		$this->_calculate_arc_time($json_return);
@@ -130,6 +148,11 @@ class Sidebar extends GAME_Controller {
 	 * Calculate points for the current quest
 	 */ 
 	private function _calculate_points(&$json_return = NULL) {
+		if ($this->_current_quest_id === NULL) {
+			log_message('debug', 'No current quest set');
+			return;
+		}
+
 		$quest = $this->quest->get_quest($this->_current_quest_id);
 		$points = $quest->point_standard;
 
@@ -168,5 +191,5 @@ class Sidebar extends GAME_Controller {
 		return $points;
 	}
 
-	private $_current_quest_id;
+	private $_current_quest_id = NULL;
 }

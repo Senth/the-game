@@ -73,22 +73,46 @@ class Quest extends GAME_Controller {
 		$quest = $this->quest->get_quest($quest_id);
 
 		if ($quest !== FALSE) {
-			$html = $quest->html;
-			$is_php = (bool) $quest->html_is_php;
+			$html = $this->_get_correct_html($quest);
 
-			// Fix php code
-			if ($is_php) {
-				$json_return['html'] = eval($html);
-			} else {
-				$json_return['html'] = $html;
-			}
-
+			$json_return['html'] = $html;
 			$json_return['success'] = TRUE;
 		} else {
 			$json_return['success'] = FALSE;
 		}
 
 		echo json_encode($json_return);
+	}
+
+	/**
+	 * Fix all shortcode links
+	 * @param quest the quest
+	 * @return fixed all shortcodes
+	 */
+	private function _get_correct_html($quest) {
+		$LINK_REGEX = '/\[(.+?)\]\((.+?)\)/';
+		$IMG_REGEX = '/!\((.+?)\)/';
+		
+		$html = $quest->html;
+		$is_php = (bool) $quest->html_is_php;
+
+		// Fix php code
+		if ($is_php) {
+			$html = eval($html);
+		}
+		$arc_id = $quest->arc_id;
+
+		// Replace links
+		$replace_url = base_url('assets/game/' . $arc_id . '/$2');
+		$link_replacement = '<a href="' . $replace_url . '">$1</a>';
+		$html = preg_replace($LINK_REGEX, $link_replacement, $html);
+
+		// Replace images
+		$replace_url = base_url('assets/game/' . $arc_id . '/$1');
+		$img_replacement = '<img style="width: 80%;" src="' . $replace_url . '"/>';
+		$html = preg_replace($IMG_REGEX, $img_replacement, $html);
+
+		return $html;
 	}
 
 	/**

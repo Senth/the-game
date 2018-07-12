@@ -44,17 +44,29 @@ function getHints() {
 			if (json.success) {
 				$('#hints').children().remove();
 
-				var headers = '<tr><th>Text</th><th>Time</th><th>-Points</th><th>Del</th></tr>';
+				var headers = '<tr>' +
+					'<th class="icon"><img src="' + baseUrl + 'assets/image/swap_vert.png"/></th>' + 
+					'<th>Text</th>' + 
+					'<th class="icon"><img src="' + baseUrl + 'assets/image/arrow_downward.png"/></th>' +
+					'<th class="icon"><img src="' + baseUrl + 'assets/image/fast_forward.png"/></th>' +
+					'<th class="icon"><img src="' + baseUrl + 'assets/image/timer.png"/></th>' +
+					'<th>Del</th></tr>';
 				$('#hints').append(headers);
 
 				if (json.hints !== undefined && json.hints != null) {
 					for (var i = 0; i < json.hints.length; ++i) {
 						hint = json.hints[i];
+						skippable = '';
+						if (hint['skippable']) {
+							skippable = ' checked="checked"';
+						}
 
 						var html = '<tr>' +
+							'<td id="reorder"><img class="reorder" src="' + baseUrl + 'assets/image/reorder.png" /></td>' +
 							'<td contenteditable="true" id="text">' + hint['text'] + '</td>' +
-							'<td contenteditable="true" id="time">' + hint['time'] + '</td>' +
 							'<td contenteditable="true" id="points">' + hint['point_deduction'] + '</td>' +
+							'<td><input type="checkbox" id="skippable"' + skippable + '/></td>' +
+							'<td contenteditable="true" id="time">' + hint['time'] + '</td>' +
 							'<td><img class="link" id="delete" src="' + baseUrl + 'assets/image/delete.png" /></td>' +
 							'</tr>';
 

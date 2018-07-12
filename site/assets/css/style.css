@@ -102,6 +102,14 @@ h3 {
 	color: #64B5F6;
 }
 
+th.icon {
+	text-align: center;
+}
+
+.reorder:hover {
+	cursor: move;
+}
+
 .link:hover {
 	cursor: hand;
 }

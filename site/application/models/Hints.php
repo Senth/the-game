@@ -54,7 +54,7 @@ class Hints extends CI_Model {
 			$deleted_order = $row->order;
 			$quest_id = $row->quest_id;
 
-			$this->db->set('order', 'order - 1', FALSE);
+			$this->db->set('`order`', '`order` - 1', FALSE);
 			$this->db->where('order >', $deleted_order);
 			$this->db->where('quest_id', $quest_id);
 			$this->db->update('hint');

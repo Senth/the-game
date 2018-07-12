@@ -61,9 +61,10 @@
 		 $id = $this->input->post('id');
 		 $text = $this->input->post('text');
 		 $time = $this->input->post('time');
+		 $skippable = $this->input->post('skippable');
 		 $points = $this->input->post('points');
 
-		 $this->hint->update($id, $text, $time, $points);
+		 $this->hint->update($id, $text, $time, $skippable, $points);
 
 		 $json_return['success'] = TRUE;
 		 echo json_encode($json_return);
@@ -84,5 +85,9 @@
 
 		 $json_return['success'] = TRUE;
 		 echo json_encode($json_return);
+	 }
+
+	 public function fix_hints() {
+		 $this->hint->fix_hints();
 	 }
  }

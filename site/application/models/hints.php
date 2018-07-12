@@ -8,7 +8,7 @@ class Hints extends CI_Model {
 	public function get_hints($quest_id) {
 		$this->db->from('hint');
 		$this->db->where('quest_id', $quest_id);
-		$this->db->order_by('time', 'asc');
+		$this->db->order_by('order', 'ASC');
 
 		$query = $this->db->get();
 
@@ -20,20 +20,71 @@ class Hints extends CI_Model {
 	}
 
 	public function insert($quest_id) {
+		// Get number of hints for this quest to set the correct order
+		$this->db->from('hint');
+		$this->db->where('quest_id', $quest_id);
+		$hints = $this->db->count_all_results();
+
 		$this->db->set('quest_id', $quest_id);
+		$this->db->set('order', $hints+1);
 		$this->db->insert('hint');
 	}
 
-	public function update($id, $text, $time, $points) {
+	public function update($id, $text, $time, $skippable, $points) {
 		$this->db->set('text', $text);
 		$this->db->set('time', $time);
+		$this->db->set('skippable', $skippable);
 		$this->db->set('point_deduction', $points);
 		$this->db->where('id', $id);
 		$this->db->update('hint');
 	}
 
 	public function delete($id) {
+		// Get hint order and move up all hints under it
+		$this->db->from('hint');
+		$this->db->select('quest_id');
+		$this->db->select('order');
+		$this->db->where('id', $id);
+		$this->db->limit(1);
+		$row = $this->db->get()->row();
+
+		// Move up all hints
+		if ($row) {
+			log_message('debug', 'Deleting hint');
+			$deleted_order = $row->order;
+			$quest_id = $row->quest_id;
+
+			$this->db->set('order', 'order - 1', FALSE);
+			$this->db->where('order >', $deleted_order);
+			$this->db->where('quest_id', $quest_id);
+			$this->db->update('hint');
+		}
+
+		// Delete hint
 		$this->db->where('id', $id);
 		$this->db->delete('hint');
+	}
+
+	public function fix_hints() {
+		$this->db->from('hint');
+		$this->db->order_by('quest_id', 'ASC');
+		$this->db->order_by('time', 'ASC');
+
+		$query = $this->db->get();
+
+		$quest_id = -1;
+		$hint_order = 1;
+		foreach ($query->result() as $row) {
+			if ($quest_id !== $row->quest_id) {
+				$quest_id = $row->quest_id;
+				$hint_order = 1;
+			} else {
+				$hint_order++;
+			}
+
+			$this->db->set('order', $hint_order);
+			$this->db->where('id', $row->id);
+			$this->db->update('hint');
+		}
 	}
 }

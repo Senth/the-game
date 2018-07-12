@@ -102,7 +102,11 @@ h3 {
 	color: #64B5F6;
 }
 
-th.icon {
+th.icon, td.icon {
+	text-align: center;
+}
+
+td.centered {
 	text-align: center;
 }
 

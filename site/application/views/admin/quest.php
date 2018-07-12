@@ -57,23 +57,26 @@ function getHints() {
 					for (var i = 0; i < json.hints.length; ++i) {
 						hint = json.hints[i];
 						skippable = '';
-						if (hint['skippable']) {
+						if (hint['skippable'] == 1) {
 							skippable = ' checked="checked"';
 						}
 
 						var html = '<tr>' +
 							'<td id="reorder"><img class="reorder" src="' + baseUrl + 'assets/image/reorder.png" /></td>' +
 							'<td contenteditable="true" id="text">' + hint['text'] + '</td>' +
-							'<td contenteditable="true" id="points">' + hint['point_deduction'] + '</td>' +
-							'<td><input type="checkbox" id="skippable"' + skippable + '/></td>' +
+							'<td class="centered" contenteditable="true" id="points">' + hint['point_deduction'] + '</td>' +
+							'<td class="icon"><input type="checkbox" id="skippable"' + skippable + '/></td>' +
 							'<td contenteditable="true" id="time">' + hint['time'] + '</td>' +
-							'<td><img class="link" id="delete" src="' + baseUrl + 'assets/image/delete.png" /></td>' +
+							'<td class="icon"><img class="link" id="delete" src="' + baseUrl + 'assets/image/delete.png" /></td>' +
 							'</tr>';
 
 						$html = $(html);
 						$html.data('id', hint['id']);
 						$html.find('td').on('blur', function() {
 							updateHint($(this).parent());	
+						});
+						$html.find('#skippable').click(function() {
+							updateHint($(this).parent().parent());
 						});
 						$html.find('#delete').click(function() {
 							$td = $(this).parent();
@@ -217,12 +220,14 @@ function updateHint($hintElement) {
 	id = $hintElement.data('id');
 	text = $hintElement.find('#text').html();
 	time = $hintElement.find('#time').html();
+	skippable = $hintElement.find('#skippable').is(':checked') ? 1 : 0;
 	points = $hintElement.find('#points').html();
 
 	var formData = {
 		ajax: true,
 		id: id,
 		text: text,
+		skippable: skippable,
 		time: time,
 		points: points
 	}

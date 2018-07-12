@@ -2,7 +2,6 @@
 
 class Sidebar extends GAME_Controller {
 	public function __construct() {
-		log_message('debug', 'Sidebar::__construct()');
 		parent::__construct();
 		$this->load->model('Teams', 'team');
 		$this->load->model('Quests', 'quest');
@@ -15,7 +14,6 @@ class Sidebar extends GAME_Controller {
 	}
 
 	public function get_info() {
-		log_message('debug', 'Sidebar::get_info()');
 		// Only handle ajax updates
 		if ($this->input->post('ajax') === FALSE) {
 			return;
@@ -29,10 +27,8 @@ class Sidebar extends GAME_Controller {
 				log_message('debug', 'Getting new quest id');
 				$this->_current_quest_id = $this->team->get_current_quest($this->team_info->get_id());
 			}
-			log_message('debug', 'Quest id: ' . $this->_current_quest_id);
 
 			if ($this->_current_quest_id !== NULL) {
-				log_message('debug', 'Sidebar::get_info() - team logged in');
 
 				$team = $this->team->get_team($this->team_info->get_id());
 				$json_return['points'] = $team->points;
@@ -65,7 +61,6 @@ class Sidebar extends GAME_Controller {
 
 				$json_return['hint_next'] = $hint_time;
 				$json_return['hint_next_penalty'] = $hint_point_deduction;
-				log_message('debug', 'Sidebar::get_info() - Hint penalty: ' . $hint_point_deduction);
 			} else {
 				$json_return['points'] = 0;
 				$json_return['quest_worth'] = 0;
@@ -95,7 +90,6 @@ class Sidebar extends GAME_Controller {
 				// Get quest info
 				$quest = $this->quest->get_quest($teams[$i]['quest']);
 				$teams[$i]['quest'] = $quest->main . '-' . $quest->sub;
-				log_message('debug', 'Quest main: ' . $quest->main . ', sub: ' . $quest->sub);
 			}
 		}
 		$json_return['teams'] = $teams;

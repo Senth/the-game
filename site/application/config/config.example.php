@@ -14,7 +14,7 @@
 | path to your installation.
 |
 */
-$config['base_url']	= 'http://game.cerina/';
+$config['base_url']	= 'http://game.DOMAIN/';
 
 /*
 |--------------------------------------------------------------------------
@@ -243,15 +243,13 @@ $config['encryption_key'] = '';
 | 'sess_match_useragent'	= Whether to match the User Agent when reading the session data
 | 'sess_time_to_update'		= how many seconds between CI refreshing Session Information
 |
-*/
-$config['sess_cookie_name']		= 'ci_session';
+ */
+$config['sess_driver'] 			= 'database';
+$config['sess_cookie_name']		= 'SET_THIS';
 $config['sess_expiration']		= 86400;
-$config['sess_expire_on_close']	= FALSE;
-$config['sess_encrypt_cookie']	= FALSE;
-$config['sess_use_database']	= FALSE;
+$config['sess_use_database']	= TRUE;
 $config['sess_table_name']		= 'ci_sessions';
 $config['sess_match_ip']		= FALSE;
-$config['sess_match_useragent']	= TRUE;
 $config['sess_time_to_update']	= 300;
 
 /*
@@ -265,8 +263,8 @@ $config['sess_time_to_update']	= 300;
 | 'cookie_secure' =  Cookies will only be set if a secure HTTPS connection exists.
 |
 */
-$config['cookie_prefix']	= "cerina_";
-$config['cookie_domain']	= "game.cerina";
+$config['cookie_prefix']	= "DOMAIN_";
+$config['cookie_domain']	= "game.DOMAIN";
 $config['cookie_path']		= "/";
 $config['cookie_secure']	= FALSE;
 

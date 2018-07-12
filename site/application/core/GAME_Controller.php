@@ -9,7 +9,7 @@ class GAME_Controller extends CI_Controller {
 		log_message('debug', 'GAME_Controller::__construct()');
 		// Get session team info
 		$team = $this->session->userdata('team');
-		if ($team !== FALSE) {
+		if ($team != null) {
 			log_message('debug', 'GAME_Controller::__construct() - Using team session');
 			$this->team_info = $team;
 		} else {
@@ -19,7 +19,7 @@ class GAME_Controller extends CI_Controller {
 
 		// Get session user info
 		$user = $this->session->userdata('user');
-		if ($user !== FALSE) {
+		if ($user != null) {
 			log_message('debug', 'GAME_Controller::__construct() - Using user session');
 			$this->user_info = $user;
 		} else {
@@ -68,6 +68,12 @@ class GAME_Controller extends CI_Controller {
 			'user_info' => $this->user_info
 		);
 
+// 		$this->load->view('template/header');
+// 		if ($this->team_info->is_logged_in() || $this->user_info->is_logged_in()) {
+// 			$this->load->view('template/sidebar');
+// 		}
+// 		$this->load->view('template/content', $inner_content);
+		// 		$this->load->view('template/footer'); 
 		$this->load->view('template/index', $view_data);
 	}
 

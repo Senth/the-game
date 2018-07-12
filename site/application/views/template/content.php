@@ -8,6 +8,6 @@
 ?>
 </div>
 <div id="inner-content">
-<?php echo $this->load->view($view, $data); ?>
+<?php $this->load->view($view, $data); ?>
 </div>
 </div>

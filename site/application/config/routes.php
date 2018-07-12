@@ -38,9 +38,9 @@
 |
 */
 
-$route['default_controller'] = "game";
+$route['default_controller'] = 'game';
 $route['404_override'] = '';
-
+$route['translate_uri_dashes'] = TRUE;
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

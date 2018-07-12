@@ -11,7 +11,7 @@ function add_error($name, $message) {
 	$CI =& get_instance();
 
 	// Retrieve all current errors and append the new error
-	$errors =& $CI->session->userdata('errors');
+	$errors = $CI->session->userdata('errors');
 	$errors[$name] = $message;
 	$CI->session->set_userdata('errors', $errors);
 }
@@ -37,11 +37,11 @@ function add_error_json($message, &$json) {
  */
 function get_errors(&$json = NULL) {
 	$CI =& get_instance();
-	$errors =& $CI->session->userdata('errors');
+	$errors = $CI->session->userdata('errors');
 
 	$return_messages = validation_errors('<p class="error">');
 
-	if ($errors !== FALSE) {
+	if ($errors != null) {
 		foreach ($errors as $message) {
 			$return_messages .= '<p class="error">' . $message . "</p>\n";
 		}
@@ -68,11 +68,11 @@ function get_errors(&$json = NULL) {
  */ 
 function get_error($name) {
 	$CI =& get_instance();
-	$errors =& $CI->session->userdata('errors');
+	$errors = $CI->session->userdata('errors');
 
 	$return_message = '';
 
-	if ($errors !== FALSE) {
+	if ($errors != null) {
 		if (isset($errors[$name])) {
 			$return_message = '<p class="error">' . $errors[$name] . "</p>\n";
 			unset($errors[$name]);
@@ -127,7 +127,7 @@ function get_success() {
 
 	$success_message = $CI->session->userdata('success');
 
-	if ($success_message !== FALSE) {
+	if ($success_message != null) {
 		$return_message = '<p class="success">' . $success_message . "</p>\n";
 	}
 

@@ -8,9 +8,12 @@
 	<title>The Game</title>
 	<?php
 echo css_asset('style.css') . "\n";
-echo css_asset('dark-hive/jquery-ui-1.8.20.custom.css') . "\n";
+// echo css_asset('dark-hive/jquery-ui-1.8.20.custom.css') . "\n";
+echo css_asset('dark-hive/jquery-ui-1.12.1.min.css') . "\n";
+echo css_asset('dark-hive/jquery-ui-1.12.1.theme.min.css') . "\n";
 echo js_asset('jquery-1.7.2.min.js') . "\n";
-echo js_asset('jquery-ui-1.8.20.custom.min.js') . "\n";
+// echo js_asset('jquery-ui-1.8.20.custom.min.js') . "\n";
+echo js_asset('jquery-ui-1.12.1.min.js') . "\n";
 echo js_asset('forms.js') . "\n";
 echo js_asset('messages.js') . "\n";
 echo js_asset('debugging.js') . "\n";

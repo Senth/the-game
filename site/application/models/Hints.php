@@ -39,18 +39,53 @@ class Hints extends CI_Model {
 		$this->db->update('hint');
 	}
 
+	public function move($id, $order) {
+		$this->db->from('hint');
+		$this->db->select('order');
+		$this->db->where('id', $id);
+		$row = $this->db->get()->row();
+
+		if ($row) {
+			$oldOrder = $row->order;
+			$update = FALSE;
+
+			// Moved down (increased the order)
+			if ($order > $oldOrder) {
+				$update = TRUE;
+				$this->db->set('`order`', '`order` - 1', FALSE);
+				$this->db->where('order >', $oldOrder);
+				$this->db->where('order <=', $order);
+				$this->db->update('hint');
+			}
+			// Moved up (decreased the order)
+			elseif ($order < $oldOrder) {
+				$update = TRUE;
+				$this->db->set('`order`', '`order` + 1', FALSE);
+				$this->db->where('order >=', $order);
+				$this->db->where('order <', $oldOrder);
+				$this->db->update('hint');
+			}
+			// Else - didn't change the position
+
+			// Update the moved hint
+			if ($update) {
+				$this->db->set('order', $order);
+				$this->db->where('id', $id);
+				$this->db->update('hint');
+			}
+		}
+	}
+
 	public function delete($id) {
-		// Get hint order and move up all hints under it
+		// Get hint order and move up all hints underN it
 		$this->db->from('hint');
 		$this->db->select('quest_id');
 		$this->db->select('order');
 		$this->db->where('id', $id);
-		$this->db->limit(1);
 		$row = $this->db->get()->row();
 
 		// Move up all hints
 		if ($row) {
-			log_message('debug', 'Deleting hint');
 			$deleted_order = $row->order;
 			$quest_id = $row->quest_id;
 

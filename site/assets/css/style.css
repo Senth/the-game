@@ -219,7 +219,7 @@ input[type="text"].big, input[type="password"].big {
 }
 
 .form_default {
-	color: #90a0cf;
+	color: #263238;
 }
 
 .small {
@@ -229,4 +229,17 @@ input[type="text"].big, input[type="password"].big {
 .info {
 	font-size: 16pt;
 	color: #FFEB3B;
+}
+
+#debug_message_wrapper {
+	position: absolute;
+	display: block;
+	max-width: 400px;
+	font-size: 12pt;
+	background-color: #212121;
+}
+
+.debug_message {
+	margin: 5px;
+	color: #eceff1;
 }

@@ -71,6 +71,19 @@
 	 }
 
 	 /**
+	  * Move/Change the order of a hint. Will automatically update all the other hints
+	  */
+	 public function move() {
+		 $id = $this->input->post('id');
+		 $order = $this->input->post('order');
+
+		 $this->hint->move($id, $order);
+
+		 $json_return['success'] = TRUE;
+		 echo json_encode($json_return);
+	 }
+
+	 /**
 	  * Remove a hint
 	  */
 	 public function remove() {

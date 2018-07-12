@@ -44,14 +44,16 @@ function getHints() {
 			if (json.success) {
 				$('#hints').children().remove();
 
-				var headers = '<tr>' +
+				var headers = '<thead><tr>' +
 					'<th class="icon"><img src="' + baseUrl + 'assets/image/swap_vert.png"/></th>' + 
 					'<th>Text</th>' + 
 					'<th class="icon"><img src="' + baseUrl + 'assets/image/arrow_downward.png"/></th>' +
 					'<th class="icon"><img src="' + baseUrl + 'assets/image/fast_forward.png"/></th>' +
 					'<th class="icon"><img src="' + baseUrl + 'assets/image/timer.png"/></th>' +
-					'<th>Del</th></tr>';
+					'<th>Del</th></tr></thead><tbody></tbody>';
 				$('#hints').append(headers);
+				$tbody = $('#hints').find('tbody');
+				
 
 				if (json.hints !== undefined && json.hints != null) {
 					for (var i = 0; i < json.hints.length; ++i) {
@@ -84,9 +86,42 @@ function getHints() {
 							deleteHint($tr);
 						});
 
-						$('#hints').append($html);
+						$tbody.append($html);
+						$tbody.sortable({
+							cursor: 'move',
+							handle: '#reorder',
+							stop: stopHintSort
+						});
 					}
 				}
+			}
+
+			displayAjaxReturnMessages(json);
+		}
+	});
+}
+
+function stopHintSort(event, ui) {
+	let hint = ui.item;
+	let newOrder = hint.index() + 1;
+
+	var formData = {
+		id: hint.data('id'),
+		order: newOrder
+	}
+
+	$.ajax({
+		url: baseUrl + 'admin/hint/move',
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
+		success: function(json) {
+			if (json === null || json.success === undefined) {
+				addMessage('Return message is null, contact administrator', 'error');
+				return;
+			}
+
+			if (json.success) {
 			}
 
 			displayAjaxReturnMessages(json);

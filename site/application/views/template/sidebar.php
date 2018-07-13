@@ -172,24 +172,43 @@ function next_hint() {
 	}, 10);
 }
 
-function next_button_down() {
+function next_click_down() {
 	$button_circle = $('#hint_next_button:active').find('#button_circle');
 	$button_circle.addClass('active');
 }
 
-function next_button_up() {
+function next_click_up() {
 	$('#button_circle').removeClass('active');
 }
 
-$('#hint_next_button').mousedown(function(event) {
-	next_button_down();
-}).mouseup(function(event) {
-	next_button_up();
-}).mouseleave(function(event) {
-	next_button_up();
-}).mouseenter(function(event) {
-	next_button_down();
+function next_touch_down() {
+	$('#button_circle').addClass('active');
+}
+
+function next_touch_up() {
+	$('#button_circle').removeClass('active');
+}
+
+$('#hint_next_button')
+	.on('touchstart', next_touch_down)
+	.on('touchend', next_touch_up)
+	.on('mouseup mouseleave', next_click_up)
+	.on('mousedown mouseenter', next_click_down)
+	.on('contextmenu', function(event) {
+		 event.preventDefault();
+		 event.stopPropagation();
+		 return false;
 });
+
+// $('#hint_next_button').mousedown(function(event) {
+// 	next_button_down();
+// }).mouseup(function(event) {
+// 	next_button_up();
+// }).mouseleave(function(event) {
+// 	next_button_up();
+// }).mouseenter(function(event) {
+// 	next_button_down();
+// });
 
 // "Button" event for showing the next hint
 $.gCanShowNextHint = true;
@@ -202,6 +221,7 @@ $('#button_circle').on('webkitTransitionEnd otransitionend oTransitionEnd msTran
 		$.gCanShowNextHint = true;
 	}
 });
+
 
 $(document).ready(function() {
 	updateSidebar();

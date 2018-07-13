@@ -28,7 +28,7 @@ function getHints() {
 	var formData = {
 		ajax: true
 	}
-
+	
 	$.ajax({
 		url: baseUrl + 'admin/hint/get_all/' + questId,
 		type: 'POST',

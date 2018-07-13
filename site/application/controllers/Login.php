@@ -76,7 +76,7 @@ class Login extends GAME_Controller {
 		$user_data = $this->user->get($user_id);
 		assert($user_data !== FALSE);
 
-		$this->user_info->login($user_id, $team_data->name);
+		$this->user_info->login($user_id, $user_data->name);
 		$this->save_session();
 
 		redirect('admin/arc');

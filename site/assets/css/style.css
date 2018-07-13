@@ -201,16 +201,16 @@ input[type="text"].big, input[type="password"].big {
 	height: 36px;
 	border-radius: 2px;
 	border: none;
-	-webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+	-webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+	-webkit-touch-callout: none !important;
     -webkit-tap-highlight-color: transparent;
     z-index: 1;
 	transform-origin: center center;
     transition: all .3s ease-out;
 	outline: 0;
-    will-change: opacity, transform;
 }
 
 #hint_next_button:hover {

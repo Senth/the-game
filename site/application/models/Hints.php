@@ -19,6 +19,45 @@ class Hints extends CI_Model {
 		}
 	}
 
+	public function get_first_hint($quest_id) {
+		if ($quest_id !== null) {
+			$this->db->from('hint');
+			$this->db->where('quest_id', $quest_id);
+			$this->db->where('order', 1);
+			return $this->db->get()->row();
+		}
+		return null;
+	}
+
+	public function get_hint($hint_id) {
+		if ($hint_id !== null) {
+			$this->db->from('hint');
+			$this->db->where('id', $hint_id);
+			return $this->db->get()->row();
+		}
+		return null;
+	}
+
+	public function get_next_hint($hint_id) {
+		if ($hint_id !== null) {
+			$current_hint = $this->get_hint($hint_id);
+
+			// Get the next hint
+			if ($current_hint !== null) {
+				$this->db->from('hint');
+				$this->db->where('quest_id', $current_hint->quest_id);
+				$this->db->where('order >', $current_hint->order);
+				$this->db->limit(1);
+				$this->db->order_by('order', 'ASC');
+
+				$next_hint = $this->db->get()->row();
+				return $next_hint;
+			}
+		}
+
+		return null;
+	}
+
 	public function insert($quest_id) {
 		// Get number of hints for this quest to set the correct order
 		$this->db->from('hint');

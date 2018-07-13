@@ -5,7 +5,6 @@
 <span class="input_info">Name:</span><input type="text" name="quest_name" id="quest_name"/><br />
 <span class="input_info">Main-Sub:</span><input maxlength="1" style="width: 1.5em;" type="text" name="main" id="main"/>-<input maxlength="1" style="width: 1.5em;" type="text" name="sub" id="sub"/><br />
 <span class="input_info">Points:</span><input type="text" name="points" id="points"/><br />
-<span class="input_info">Points First:</span><input type="text" name="points_first" id="points_first"><br />
 <span class="input_info">Answer:</span><input type="text" name="answer" id="answer"/><br />
 <span class="input_info">Is php:</span><input type="checkbox" name="is_php" id="is_php"/><br />
 <span class="input_info">Html:</span><br />
@@ -149,8 +148,7 @@ function getQuest() {
 				$('#quest_name').val(json.quest['name']);
 				$('#main').val(json.quest['main']);
 				$('#sub').val(json.quest['sub']);
-				$('#points').val(json.quest['point_standard']);
-				$('#points_first').val(json.quest['point_first_extra']);
+				$('#points').val(json.quest['points']);
 				$('#answer').val(json.quest['answer']);
 				if (json.quest['html_is_php'] == 1) {
 					$('#is_php').prop('checked', true);
@@ -173,7 +171,6 @@ function updateQuest() {
 		main: $('#main').val(),
 		sub: $('#sub').val(),
 		points: $('#points').val(),
-		points_first: $('#points_first').val(),
 		answer: $('#answer').val(),
 		is_php: $('#is_php').prop('checked'),
 		html: $('#html').val()

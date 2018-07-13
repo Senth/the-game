@@ -18,7 +18,7 @@ function repopulateQuests(quests) {
 		var html = '<tr id="quest_id_' + quest['id'] + '">' +
 			'<td id="main_sub">' + quest['main'] + '-' + quest['sub'] + '</td>' +
 			'<td id="quest_name"><a href="' + baseUrl + 'admin/quest/view/' + quest['id'] + '">' + quest['name'] + '</a></td>' +
-			'<td id="points">' + quest['point_standard'] + '</td>' + 
+			'<td id="points">' + quest['points'] + '</td>' + 
 			'</tr>';
 
 		$('#quest_container').append(html);

@@ -111,22 +111,68 @@ class Game extends GAME_Controller {
 		}
 
 		$json_return['success'] = TRUE;
-
-		// Check if hints shall be shown
-		$team = $this->team->get_team($this->team_info->get_id());
-		$time_since_started = time() - $team->started_quest;
-
-		if ($this->_current_quest_id !== NULL) {
-			$hints = $this->hint->get_hints($this->_current_quest_id);
-			$i = 0;
-			foreach ($hints as $hint) {
-				if ($time_since_started >= $hint->time) {
-					$json_return['hint'][$i] = $hint->text;
-					$i++;
-				}
-			}
+		
+		if ($this->_current_quest_id == null) {
+			echo json_encode($json_return);
+			return;
 		}
 
+		$team = $this->team->get_team($this->team_info->get_id());
+
+		// Get the next hint
+		$current_hint = $this->hint->get_hint($team->current_hint);
+		if ($current_hint === null) {
+			$next_hint = $this->hint->get_first_hint($team->current_quest_id);
+		} else {
+			$next_hint = $this->hint->get_next_hint($team->current_hint);
+		}
+
+
+		// Move to next hint if enough time has passed
+		if ($next_hint !== null && $next_hint->time > 0) {
+			$time_since_started = time() - $team->started_quest;
+
+			if ($time_since_started > $next_hint->time) {
+				$this->team->set_hint($this->team_info->get_id(), $next_hint->id);
+			}
+		}
+		
+
+		// Check which hints shall be shown
+		if ($team->current_hint !== null) {
+			$hints = $this->hint->get_hints($team->current_quest_id);
+
+			foreach ($hints as $hint) {
+				$json_return['hint'][$hint->order - 1] = $hint->text;
+
+				// Found current hint, don't show the rest
+				if ($hint->id == $team->current_hint) {
+					break;
+				}
+			}
+		}	
+
+		echo json_encode($json_return);
+	}
+
+	public function next_hint() {
+		$team_id = $this->team_info->get_id();
+
+		// Get the team's current hint
+		$current_hint_id = $this->team->get_current_hint($team_id);
+
+		// Get the next hint
+		if ($current_hint_id === null) {
+			$next_hint = $this->hint->get_first_hint($this->_current_quest_id);
+		} else {
+			$next_hint = $this->hint->get_next_hint($current_hint_id);
+		}
+
+		if ($next_hint !== null && $next_hint->skippable == 1) {
+			$this->team->set_hint($team_id, $next_hint->id);
+		}
+
+		$json_return['success'] = TRUE;
 		echo json_encode($json_return);
 	}
 
@@ -185,7 +231,6 @@ class Game extends GAME_Controller {
 		// Check if team can answer (time)
 		$team = $this->team->get_team($this->team_info->get_id());
 		$time_diff = (time() - $team->last_answered);
-		log_message('debug', 'check for right answer');
 		if ($time_diff < self::ANSWER_DELAY) {
 			$time_left = self::ANSWER_DELAY - $time_diff;
 			add_error_json('You still have <span class="time_left">' . $time_left . '</span> seconds before you can answer.', $json_return);
@@ -195,12 +240,9 @@ class Game extends GAME_Controller {
 
 		// Check if it was the right answer
 		else if ($this->quest->is_right_answer($this->_current_quest_id, $this->input->post('answer'))) {
-			log_message('debug', 'correct answer');
 			$this->_goto_next_quest();
-			log_message('debug', 'Game::try_answer() - after goto_next_quest()');
 			$json_return['success'] = TRUE;
 			set_success_json('Correct answer! :D', $json_return);
-			log_message('debug', 'Game::try_answer() - added json return message');
 		} else {
 			add_error_json('Wrong answer please try again in <span class="time_left">20</span> seconds.', $json_return);
 			$json_return['time_left'] = self::ANSWER_DELAY;
@@ -215,12 +257,6 @@ class Game extends GAME_Controller {
 		$points = $this->_calculate_points();
 		$this->team->add_points($this->team_info->get_id(), $points);
 
-		// Answered first? Set first_team_id then
-		$quest = $this->quest->get_quest($this->_current_quest_id);
-		if ($quest->first_team_id === NULL) {
-			$this->quest->set_first_team($quest->id, $this->team_info->get_id());
-		}
-
 		// Set new quest
 		$next_quest_id = $this->quest->get_next_quest_id($this->_current_quest_id);
 		$this->team->set_current_quest($this->team_info->get_id(), $next_quest_id);
@@ -229,28 +265,25 @@ class Game extends GAME_Controller {
 
 	private function _calculate_points() {
 		$quest = $this->quest->get_quest($this->_current_quest_id);
-		$points = $quest->point_standard;
+		$points = $quest->points;
 
-		// Check if hints can be seen, use their points instead then
+		// Remove shown hint points
 		$team = $this->team->get_team($this->team_info->get_id());
-		$time_since_started = time() - $team->started_quest;
+		$current_hint = $this->hint->get_hint($team->current_hint);
 
-		$hints = $this->hint->get_hints($this->_current_quest_id);
+		if ($current_hint !== null) {
+			$hints = $this->hint->get_hints($this->_current_quest_id);
 
-		$hint_penalty = 0;
-		foreach ($hints as $hint) {
-			if ($time_since_started >= $hint->time) {
+			$hint_penalty = 0;
+			foreach ($hints as $hint) {
 				$hint_penalty += $hint->point_deduction;
-			}
-		}
-		$points -= $hint_penalty;
 
-		// Are we first?
-		$team_first = 0;
-		if ($quest->first_team_id === NULL) {
-			$team_first = $quest->point_first_extra;
+				if ($hint->id == $current_hint->id) {
+					break;
+				}
+			}
+			$points -= $hint_penalty;
 		}
-		$points += $team_first;
 
 		return $points;
 	}

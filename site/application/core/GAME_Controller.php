@@ -6,27 +6,21 @@ class GAME_Controller extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 
-		log_message('debug', 'GAME_Controller::__construct()');
 		// Get session team info
 		$team = $this->session->userdata('team');
 		if ($team != null) {
-			log_message('debug', 'GAME_Controller::__construct() - Using team session');
 			$this->team_info = $team;
 		} else {
-			log_message('debug', 'GAME_Controller::__construct() - No team session found, creating new team');
 			$this->team_info = new User_info();
 		}
 
 		// Get session user info
 		$user = $this->session->userdata('user');
 		if ($user != null) {
-			log_message('debug', 'GAME_Controller::__construct() - Using user session');
 			$this->user_info = $user;
 		} else {
-			log_message('debug', 'GAME_Controller::__construct() - No user session found, creating new user');
 			$this->user_info = new User_info();
 		}
-		log_message('debug', 'GAME_Controller::__construct() - end');
 
 		$this->_validate_access();
 	}
@@ -35,17 +29,14 @@ class GAME_Controller extends CI_Controller {
 	 * Saves session variables if they have been changed
 	 */ 
 	protected function save_session() {
-		log_message('debug', 'GAME_Controller::save_session()');
 		// Set session team data if changed
 		if ($this->team_info->has_changed()) {
-			log_message('debug', 'GAME_Controller::save_session() - team changed');
 			$this->team_info->set_not_changed();
 			$this->session->set_userdata('team', $this->team_info);
 		}
 
 		// Set session user data if changed
 		if ($this->user_info->has_changed()) {
-			log_message('debug', 'GAME_Controller::save_session() - user changed');
 			$this->user_info->set_not_changed();
 			$this->session->set_userdata('user', $this->user_info);
 		}

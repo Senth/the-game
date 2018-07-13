@@ -94,8 +94,25 @@ class Teams extends CI_Model {
 		$this->db->set('current_quest_id', $quest_id);
 		$this->db->set('started_quest', time());
 		$this->db->set('last_answered', 0);
+		$this->db->set('current_hint', null);
 		$this->db->where('id', $team_id);
 
+		$this->db->update('team');
+	}
+
+	public function get_current_hint($team_id) {
+		$this->db->from('team');
+		$this->db->select('current_hint');
+		$this->db->where('id', $team_id);
+		$row = $this->db->get()->row();
+
+		return $row->current_hint;
+	}
+
+	public function set_hint($team_id, $hint_id) {
+		log_message('debug', 'Teams::set_hint(' . $team_id . ', ' . $hint_id . ')');
+		$this->db->set('current_hint', $hint_id);
+		$this->db->where('id', $team_id);
 		$this->db->update('team');
 	}
 
@@ -106,7 +123,7 @@ class Teams extends CI_Model {
 	}
 
 	public function add_points($team_id, $points) {
-		$this->db->set('points', "points+$points", FALSE);
+		$this->db->set('`points`', "`points` + $points", FALSE);
 		$this->db->where('id', $team_id);
 		$this->db->update('team');
 	}

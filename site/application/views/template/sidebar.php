@@ -9,12 +9,23 @@ if ($team_info->is_logged_in()) {
 		<h3>Score: <span id="points">0 points</span></h3>
 		<h3 style="margin-bottom: 0px;">Quest is worth: <span id="quest_worth">0 points</span></h3>
 		<p class="progress_text">
-		Quest points: <span class="success" id="point_default">0p</span><br />
-		Hint penalty: <span class="error" id="point_hint_penalty">0p</span><br />
+		Quest points: <span class="success" id="quest_points">0p</span><br />
+		Total hint penalty: <span class="error" id="total_hint_penalty">0p</span><br />
 		</p>
-		<h3 style="margin-bottom: 0px;">Next hint in: <span id="hint_next">0 seconds</span></h3>
-		<p class="progress_text">
-		Hint penalty: <span class="error" id="hint_next_penalty">0p</span></p>';
+		<h3 id="no_more_hints">Out Of Hints :(</h3>
+		<h3 id="hint_next_time_wrapper" style="display: none; margin-bottom: 0px;">
+		Next hint in: <span id="hint_next_time">0</span> seconds
+		</h3>
+		<h3 id="hint_next_notime_wrapper" style="display: none; margin-bottom: 0px">
+		Next hint
+		</h3>
+		<p id="hint_next_penalty_wrapper" class="progress_text" style="display: none;">
+		Hint penalty: <span class="error" id="hint_next_penalty">0p</span>
+		</p>
+		<p class="centered"><button id="hint_next_button">
+		<img src="' . base_url('/assets/image/fast_forward.png') . '" />
+		<div id="button_circle"></div>
+		</button></p>';
 	echo $html;
 }
 ?>
@@ -58,11 +69,36 @@ function updateSidebar() {
 			if (isTeam) {
 				$('#points').html(json.points + ' points');
 				$('#quest_worth').html(json.quest_worth + ' points');
-				$('#hint_next').html(json.hint_next);
-				$('#point_default').html(json.point_default + 'p');
-				$('#point_first').html(json.point_first + 'p');
-				$('#point_hint_penalty').html(json.point_hint_penalty + 'p');
-				$('#hint_next_penalty').html(json.hint_next_penalty + 'p');
+				$('#quest_points').html(json.quest_points + 'p');
+				$('#total_hint_penalty').html(json.total_hint_penalty + 'p');
+
+				if (json.hint_next_time === undefined) {
+					$('#hint_next_time_wrapper').css('display', 'none');
+					$('#hint_next_notime_wrapper').css('display', 'block');
+				} else {
+					$('#hint_next_time').html(json.hint_next_time);
+					$('#hint_next_time_wrapper').css('display', 'block');
+					$('#hint_next_notime_wrapper').css('display', 'none');
+				}
+
+				if (json.no_more_hints === undefined) {
+					$('#hint_next_penalty').html(json.hint_next_penalty + 'p');
+					$('#hint_next_penalty_wrapper').css('display', 'inline');
+					$('#no_more_hints').css('display', 'none');
+					
+					if (json.hint_skippable !== undefined && json.hint_skippable == true) {
+						$('#hint_next_button').css('display', 'inline');
+						$('#button_cirle').removeClass('pressed').removeClass('cooldown');
+					} else {
+						$('#hint_next_button').css('display', 'none');
+					}
+				} else {
+					$('#hint_next_penalty_wrapper').css('display', 'none');
+					$('#no_more_hints').css('display', 'block');
+					$('#hint_next_notime_wrapper').css('display', 'none');
+					$('#hint_next_button').css('display', 'none');
+				}
+
 
 				// Calculate completed
 				var completed = json.quests_completed;
@@ -119,8 +155,57 @@ function updateSidebar() {
 	setTimeout('updateSidebar()', 1000);
 }
 
+function next_hint() {
+	$.ajax({
+	url: baseUrl + 'game/next_hint',
+		type: 'POST',
+	});
+
+	$('#button_circle')
+		.removeClass('active')
+		.addClass('pressed');
+
+	setTimeout(function() {
+		$('#button_circle')
+			.removeClass('pressed')
+			.addClass('cooldown');
+	}, 10);
+}
+
+function next_button_down() {
+	$button_circle = $('#hint_next_button:active').find('#button_circle');
+	$button_circle.addClass('active');
+}
+
+function next_button_up() {
+	$('#button_circle').removeClass('active');
+}
+
+$('#hint_next_button').mousedown(function(event) {
+	next_button_down();
+}).mouseup(function(event) {
+	next_button_up();
+}).mouseleave(function(event) {
+	next_button_up();
+}).mouseenter(function(event) {
+	next_button_down();
+});
+
+// "Button" event for showing the next hint
+$.gCanShowNextHint = true;
+$('#button_circle').on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e) {
+	if ($.gCanShowNextHint && $(this).css('width') == $(this).parent().css('width')) {
+		$.gCanShowNextHint = false;
+		next_hint();
+	} else if ($(this).css('width') == '0px') {
+		$(this).removeClass('cooldown');
+		$.gCanShowNextHint = true;
+	}
+});
+
 $(document).ready(function() {
 	updateSidebar();
+	
 });
 
 </script>

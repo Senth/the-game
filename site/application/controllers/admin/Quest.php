@@ -177,9 +177,8 @@ class Quest extends GAME_Controller {
 		$is_php = $this->input->post('is_php') == 'true' ? TRUE : FALSE;
 		$answer = strtolower($this->input->post('answer'));
 		$points = $this->input->post('points');
-		$points_first = $this->input->post('points_first');
 
-		$this->quest->update($id, $name, $main, $sub, $html, $is_php, $answer, $points, $points_first);
+		$this->quest->update($id, $name, $main, $sub, $html, $is_php, $answer, $points);
 
 		$json_return['success'] = TRUE;
 

@@ -5,7 +5,7 @@
 	echo '<div id="answer_box">';
 
 	$form['id'] = 'answer_form';
-	echo form_open('game/try_answer', $form);
+	echo form_open('game/try-answer', $form);
 
 	$input['type'] = 'text';
 	$input['name'] = 'answer';

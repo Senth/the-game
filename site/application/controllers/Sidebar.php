@@ -24,7 +24,6 @@ class Sidebar extends GAME_Controller {
 
 		if ($this->team_info->is_logged_in()) {
 			if ($this->_current_quest_id === NULL) {
-				log_message('debug', 'Getting new quest id');
 				$this->_current_quest_id = $this->team->get_current_quest($this->team_info->get_id());
 			}
 
@@ -34,43 +33,45 @@ class Sidebar extends GAME_Controller {
 				$json_return['points'] = $team->points;
 
 				$quest = $this->quest->get_quest($this->_current_quest_id);
-				log_message('debug', 'Sidebar::get_info() - before calculate points');
-				$json_return['quest_worth'] = $this->_calculate_points($json_return);
+
+				// Calculate points
+				$this->_calculate_points($json_return);
 
 				// Completed
 				$this->_calculate_completed($quest->arc_id, $json_return);
 
-				// hints
-				$hint_time = -1;
-				$hint_point_deduction = 0;
-
+				// Hint time and information
 				$team = $this->team->get_team($this->team_info->get_id());
-				$time_since_started = time() - $team->started_quest;
+				$current_hint = $this->hint->get_hint($team->current_hint);
+				if ($current_hint === null) {
+					$next_hint = $this->hint->get_first_hint($team->current_quest_id);	
+				} else {
+					$next_hint = $this->hint->get_next_hint($team->current_hint);
+				}
 
-				$hints = $this->hint->get_hints($this->_current_quest_id);
-				foreach ($hints as $hint) {
-					if ($time_since_started <= $hint->time) {
-						$hint_time = $hint->time - $time_since_started;
-						$hint_point_deduction = $hint->point_deduction;
-						break;
+				if ($next_hint !== null) {
+					// Next hint penalty
+					$json_return['hint_next_penalty'] = $next_hint->point_deduction;
+
+					// Is automatically shown
+					if ($next_hint->time > 0) {
+						$time_since_started = time() - $team->started_quest;
+						$time_left = $next_hint->time - $time_since_started + 2;
+						$json_return['hint_next_time'] = $time_left;
 					}
-				}
-				if ($hint_time == -1) {
-					$hint_time = 'No hints left';
-				}
 
-				$json_return['hint_next'] = $hint_time;
-				$json_return['hint_next_penalty'] = $hint_point_deduction;
+					// Can be skipped
+					$json_return['hint_skippable'] = $next_hint->skippable == 1;
+				} else {
+					$json_return['no_more_hints'] = true;
+				}
 			} else {
 				$json_return['points'] = 0;
 				$json_return['quest_worth'] = 0;
-				$json_return['point_default'] = 0;
-				$json_return['point_first'] = 0;
+				$json_return['quest_points'] = 0;
 				$json_return['quests_completed'] = 0;
 				$json_return['quests_total'] = '??';
-				$json_return['hint_next'] = 0;
-				$json_return['hint_next_penalty'] = 0;
-				$json_return['point_hint_penalty'] = 0;
+				$json_return['total_hint_penalty'] = 0;
 			}
 		}
 
@@ -148,41 +149,32 @@ class Sidebar extends GAME_Controller {
 		}
 
 		$quest = $this->quest->get_quest($this->_current_quest_id);
-		$points = $quest->point_standard;
+		$quest_worth = $quest->points;
 
 		if (isset($json_return)) {
-			$json_return['point_default'] = $points;
+			$json_return['quest_points'] = $quest_worth;
 		}
 	
 		// Check if hints can be seen, use their points instead then
 		$team = $this->team->get_team($this->team_info->get_id());
-		$time_since_started = time() - $team->started_quest;
-
 		$hints = $this->hint->get_hints($this->_current_quest_id);
 
 		$hint_penalty = 0;
-		foreach ($hints as $hint) {
-			if ($time_since_started >= $hint->time) {
+		if ($team->current_hint !== null) {
+			foreach ($hints as $hint) {
 				$hint_penalty += $hint->point_deduction;
+
+				if ($hint->id == $team->current_hint) {
+					break;
+				}
 			}
+			$quest_worth -= $hint_penalty;
 		}
-		$points -= $hint_penalty;
 
 		if (isset($json_return)) {
-			$json_return['point_hint_penalty'] = $hint_penalty;
+			$json_return['total_hint_penalty'] = $hint_penalty;
+			$json_return['quest_worth'] = $quest_worth;
 		}
-
-		// Are we first?
-		$team_first = 0;
-		if ($quest->first_team_id === NULL) {
-			$team_first = $quest->point_first_extra;
-		}
-		$points += $team_first;
-		if (isset($json_return)) {
-			$json_return['point_first'] = $team_first;
-		}
-
-		return $points;
 	}
 
 	private $_current_quest_id = NULL;

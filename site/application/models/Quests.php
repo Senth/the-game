@@ -127,13 +127,7 @@ class Quests extends CI_Model {
 		$this->db->update('quest');
 	}
 
-	public function set_first_team($quest_id, $team_id) {
-		$this->db->set('first_team_id', $team_id);
-		$this->db->where('id', $quest_id);
-		$this->db->update('quest');
-	}
-
-	public function update($id, $name, $main, $sub, $html, $is_php, $answer, $points, $points_first) {
+	public function update($id, $name, $main, $sub, $html, $is_php, $answer, $points) {
 		$this->db->set('name', $name);
 		$this->db->set('main', $main);
 		$this->db->set('sub', $sub);
@@ -141,8 +135,7 @@ class Quests extends CI_Model {
 		$this->db->set('html', $html);
 		$this->db->set('html_is_php', $is_php ? 1 : 0);
 		$this->db->set('answer', $answer);
-		$this->db->set('point_standard', $points);
-		$this->db->set('point_first_extra', $points_first);
+		$this->db->set('points', $points);
 		$this->db->where('id', $id);
 		$this->db->update('quest');
 	}
@@ -152,7 +145,6 @@ class Quests extends CI_Model {
 	 * @param arc_id
 	 */ 
 	public function reset($arc_id) {
-		$this->db->set('first_team_id', null);
 		$this->db->set('start_time', null);
 		$this->db->where('arc_id', $arc_id);
 		$this->db->update('quest');

@@ -80,8 +80,8 @@ function getHints() {
 							updateHint($(this).parent().parent());
 						});
 						$html.find('#delete').click(function() {
-							$td = $(this).parent();
-							$tr = $td.parent();
+							let $td = $(this).parent();
+							let $tr = $td.parent();
 							deleteHint($tr);
 						});
 

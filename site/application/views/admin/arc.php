@@ -34,9 +34,9 @@ String.prototype.toHHMMSS = function () {
 }
 
 function addArc(id, name, length, started) {
-	var html = '<tr id="arc_id_' + id + '">' + 
+	let html = '<tr>' + 
 		'<td><a href="' + baseUrl + 'admin/quest/arc/' + id + '">' + name + '</a></td>' +
-		'<td>' + length.toHHMMSS() + '</td>' +
+		'<td contenteditable="true">' + length.toHHMMSS() + '</td>' +
 		'<td style="text-align: center;" id="start">';
 
 	if (started) {
@@ -49,6 +49,7 @@ function addArc(id, name, length, started) {
 		'<td style="text-align: center;"><img class="link" id="reset_arc" src="' + baseUrl + 'assets/image/restore.png" /></td>' + 
 		'</tr>';
 	$arc = $(html);
+	$arc.data('id', id);
 	$table = $('#arc_table');
 	$table.append($arc);
 

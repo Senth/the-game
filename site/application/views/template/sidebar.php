@@ -200,16 +200,6 @@ $('#hint_next_button')
 		 return false;
 });
 
-// $('#hint_next_button').mousedown(function(event) {
-// 	next_button_down();
-// }).mouseup(function(event) {
-// 	next_button_up();
-// }).mouseleave(function(event) {
-// 	next_button_up();
-// }).mouseenter(function(event) {
-// 	next_button_down();
-// });
-
 // "Button" event for showing the next hint
 $.gCanShowNextHint = true;
 $('#button_circle').on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e) {

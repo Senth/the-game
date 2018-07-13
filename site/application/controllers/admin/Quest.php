@@ -184,4 +184,14 @@ class Quest extends GAME_Controller {
 
 		echo json_encode($json_return);
 	}
+
+	public function remove() {
+		$id = $this->input->post('id');
+
+		log_message('debug', 'Delete quest with id: ' . $id);
+		$this->quest->delete($id);
+
+		$json_return['success'] = TRUE;
+		echo json_encode($json_return);
+	}
 }

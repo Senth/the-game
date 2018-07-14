@@ -33,11 +33,31 @@ String.prototype.toHHMMSS = function () {
     return time;
 }
 
+String.prototype.toHHMM = function () {
+    var sec_num = parseInt(this, 10); // don't forget the second param
+    var hours   = Math.floor(sec_num / 3600);
+    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    var time    = hours+':'+minutes;
+    return time;
+}
+
+String.prototype.toSeconds = function() {
+	if (!this) {
+		return null;
+	}
+	let hms = this.split(':');
+	let seconds = (+hms[0]) * 3600 + (+hms[1]) * 60 + (+hms[2] || 0);
+	return seconds;
+}
+
 function addArc(id, name, length, started) {
 	let html = '<tr>' + 
-		'<td><a href="' + baseUrl + 'admin/quest/arc/' + id + '">' + name + '</a></td>' +
-		'<td contenteditable="true">' + length.toHHMMSS() + '</td>' +
-		'<td style="text-align: center;" id="start">';
+		'<td><a contenteditable="true" id="name" href="' + baseUrl + 'admin/quest/arc/' + id + '">' + name + '</a></td>' +
+		'<td id="length" class="centered" contenteditable="true">' + length.toHHMM() + '</td>' +
+		'<td class="centered" id="start">';
 
 	if (started) {
 		html += 'started';
@@ -46,12 +66,20 @@ function addArc(id, name, length, started) {
 	}
 
 	html += '</td>' +
-		'<td style="text-align: center;"><img class="link" id="reset_arc" src="' + baseUrl + 'assets/image/restore.png" /></td>' + 
+		'<td class="centered"><img class="link" id="reset_arc" src="' + baseUrl + 'assets/image/restore.png" /></td>' + 
 		'</tr>';
 	$arc = $(html);
 	$arc.data('id', id);
 	$table = $('#arc_table');
 	$table.append($arc);
+
+	$arc.find('#length').on('blur', function() {
+		updateArc($(this).parent());
+	});
+
+	$arc.find('#name').on('blur', function() {
+		updateArc($(this).parent().parent());
+	});
 
 	if (!started) {
 		$arc.find('#start_arc').click(function() {
@@ -105,6 +133,24 @@ function addArc(id, name, length, started) {
 				displayAjaxReturnMessages(json);
 			}
 		});
+	});
+}
+
+function updateArc($arcElement) {
+	let lengthHS = $arcElement.find('#length').html();
+	let length = lengthHS.toSeconds();
+
+	let formData = {
+		id: $arcElement.data('id'),
+		name: $arcElement.find('#name').html(),
+		length: length,
+	}
+
+	$.ajax({
+		url: baseUrl + 'admin/arc/edit',
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
 	});
 }
 

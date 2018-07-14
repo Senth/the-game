@@ -77,4 +77,11 @@ class Arcs extends CI_Model {
 		$this->db->insert('arc');
 		return $this->db->insert_id();
 	}
+
+	public function update($id, $name, $length) {
+		$this->db->set('name', $name);
+		$this->db->set('length', $length);
+		$this->db->where('id', $id);
+		$this->db->update('arc');
+	}
 }

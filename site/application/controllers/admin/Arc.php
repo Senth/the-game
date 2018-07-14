@@ -109,4 +109,18 @@ class Arc extends GAME_Controller {
 
 		echo json_encode($json_return);
 	}
+
+	/**
+	 * Edit an arc
+	 */
+	public function edit() {
+		$id = $this->input->post('id');
+		$name = $this->input->post('name');
+		$length = $this->input->post('length');
+
+		$this->arc->update($id, $name, $length);
+
+		$json_return['success'] = TRUE;
+		echo json_encode($json_return);
+	}
 }

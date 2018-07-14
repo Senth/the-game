@@ -1,6 +1,6 @@
 <div id="middle_form-wrapper" style="margin-top: 100px;">
 <div id="middle_form" class="fine_border">
-<h1 style="text-align: center;"> Login </h1>
+<h1 class="centered">Login</h1>
 <?php
 	echo form_open('login');
 	
@@ -18,7 +18,7 @@
 	$input['name'] = 'password';
 	$input['maxlength'] = '50';
 	$input['placeholder'] = 'password';
-	$input['alt'] = 'Password';
+	$input['alt'] = 'password';
 	$input['id'] = $input['name'];
 	$input['value'] = set_value($input['name'], $input['alt']);
 	echo form_input($input);

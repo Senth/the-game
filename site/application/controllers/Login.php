@@ -9,18 +9,18 @@ class Login extends GAME_Controller {
 	public function index() {
 		// Redirect to game page if team is logged in.
 		if ($this->team_info->is_logged_in()) {
-			log_message('debug', 'Already logged in, redirecting to game');
 			redirect('game', 'refresh');
-		} elseif ($this->user_info->is_logged_in()) {
+		}
+		// Redirect to admin page for users
+		elseif ($this->user_info->is_logged_in()) {
 			redirect('admin/arc', 'refresh');
 		}
 
 		// Show login if tried to login
-		if ($this->input->post('login') === FALSE) {
-			$this->_show_login();
-			return;
-		} else {
+		if ($this->input->post('login') !== null) {
 			$this->_validate_login();
+		} else {
+			$this->_show_login();
 		}
 	}
 
@@ -51,7 +51,6 @@ class Login extends GAME_Controller {
 		} elseif ($user_id !== FALSE) {
 			$this->_login_user($user_id);
 		} else {
-			add_error('no_user', 'There is no team with that password.');
 			$this->_show_login();
 		}
 	}

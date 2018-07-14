@@ -54,8 +54,8 @@ String.prototype.toSeconds = function() {
 }
 
 function addArc(id, name, length, started) {
-	let html = '<tr>' + 
-		'<td><a contenteditable="true" id="name" href="' + baseUrl + 'admin/quest/arc/' + id + '">' + name + '</a></td>' +
+	let html = '<tr id="arc_id_' + id + '">' + 
+		'<td id="name_column"><a id="name" href="' + baseUrl + 'admin/quest/arc/' + id + '">' + name + '</a></td>' +
 		'<td id="length" class="centered" contenteditable="true">' + length.toHHMM() + '</td>' +
 		'<td class="centered" id="start">';
 
@@ -76,9 +76,17 @@ function addArc(id, name, length, started) {
 	$arc.find('#length').on('blur', function() {
 		updateArc($(this).parent());
 	});
-
 	$arc.find('#name').on('blur', function() {
 		updateArc($(this).parent().parent());
+		$(this).attr('contenteditable', 'false');
+	});
+	$arc.find('#name').click(function (event) {
+		event.stopPropagation();
+	});
+	$arc.find('#name_column"').click(function(event) {
+		$name = $(this).find('#name');
+		$name.attr('contenteditable', 'true');
+		$name.focus();
 	});
 
 	if (!started) {

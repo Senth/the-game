@@ -299,12 +299,11 @@ input[type="text"].big, input[type="password"].big {
 }
 
 .error {
-	color: #F44336;
+	color: #e57373;
 }
 
 .success {
-/* 	font-size: 12pt; */
-	color: #4CAF50;
+	color: #81c784;
 }
 
 .form_default {
@@ -316,8 +315,7 @@ input[type="text"].big, input[type="password"].big {
 }
 
 .info {
-	font-size: 16pt;
-	color: #FFEB3B;
+	color: #fff176;
 }
 
 #debug_message_wrapper {

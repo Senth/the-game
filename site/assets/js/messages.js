@@ -25,7 +25,7 @@ function addMessage(message, type, $time) {
  * will use the standard time
  */
 function addMessageTo(message, element, type, time) {
-	if (type === undefined) {
+	if (type === undefined || type == null) {
 		var $jqMessage = $(message);
 		element.append($jqMessage);
 		fadeMessage($jqMessage, time);
@@ -54,6 +54,7 @@ function fadeMessage($jqMessage, time) {
 		.slideUp(SLIDE_TIME)
 		.queue(function() {
 			triggerEvent('pageChanged');
+			$(this).remove();
 		});
 }
 
@@ -64,20 +65,12 @@ function fadeMessage($jqMessage, time) {
  * 	If it is left undefined it will default to the default message place
  */
 function displayAjaxReturnMessages(json, element) {
-	// Display success messages if it succeeded
-	if (json.success_message !== undefined) {
+	// Display messages
+	if (json.message !== undefined) {
 		if (element === undefined) {
-			addMessage(json.success_message);
+			addMessage(json.message);
 		} else {
-			addMessageTo(json.success_message, element);
+			addMessage(json.message, element);
 		}
 	}
-	// Display error messages if it failed
-	if (json.error_messages !== undefined) {
-		if (element === undefined) {
-			addMessage(json.error_messages);
-		} else {
-			addMessageTo(json.error_messages, element);
-		}
-	}	
 }

@@ -7,6 +7,7 @@ class Game extends GAME_Controller {
 		$this->load->model('Teams', 'team');
 		$this->load->model('Quests', 'quest');
 		$this->load->model('Hints', 'hint');
+		$this->load->model('Guesses', 'guess');
 		log_message('debug', 'Game loaded successfully!');
 
 		$this->_current_quest_id = $this->team->get_current_quest($this->team_info->get_id());
@@ -17,11 +18,6 @@ class Game extends GAME_Controller {
 	}
 
 	public function get_quest() {
-		// Only handle ajax updates
-		if ($this->input->post('ajax') === FALSE) {
-			return;
-		}
-
 		log_message('debug', 'Getting quest');
 
 		$json_return['success'] = FALSE;
@@ -105,11 +101,6 @@ class Game extends GAME_Controller {
 	}
 	
 	public function get_hints() {
-		// Only handle ajax updates
-		if ($this->input->post('ajax') === FALSE) {
-			return;
-		}
-
 		$json_return['success'] = TRUE;
 		
 		if ($this->_current_quest_id == null) {
@@ -221,32 +212,37 @@ class Game extends GAME_Controller {
 	}
 
 	public function try_answer() {
-		// Only handle ajax updates
-		if ($this->input->post('ajax') === FALSE) {
-			return;
-		}
+		$json_return['state'] = 'ERROR';
 
-		$json_return['success'] = FALSE;
+		$answer = $this->input->post('answer');
 
 		// Check if team can answer (time)
 		$team = $this->team->get_team($this->team_info->get_id());
 		$time_diff = (time() - $team->last_answered);
 		if ($time_diff < self::ANSWER_DELAY) {
 			$time_left = self::ANSWER_DELAY - $time_diff;
-			add_error_json('You still have <span class="time_left">' . $time_left . '</span> seconds before you can answer.', $json_return);
+			add_json_message('error', 'You still have <span class="time_left">' . $time_left . '</span> seconds before you can answer.', $json_return);
 			$json_return['time_left'] = $time_left;
-	
+			$json_return['state'] = 'WAIT';
 		}
-
+		// Check if the team already has tried that answer
+		elseif ($this->guess->exists($team->id, $this->_current_quest_id, $answer)) {
+			add_json_message('info', 'You already tried this answer before :) It was wrong :(', $json_return);
+			$json_return['state'] = 'ALREADY_ANSWERED';
+		}
 		// Check if it was the right answer
-		else if ($this->quest->is_right_answer($this->_current_quest_id, $this->input->post('answer'))) {
+		elseif ($this->quest->is_right_answer($this->_current_quest_id, $answer)) {
 			$this->_goto_next_quest();
-			$json_return['success'] = TRUE;
-			set_success_json('Correct answer! :D', $json_return);
-		} else {
-			add_error_json('Wrong answer please try again in <span class="time_left">20</span> seconds.', $json_return);
+			$json_return['state'] = 'CORRECT_ANSWER';
+			add_json_message('success', 'Correct answer! :D', $json_return);
+		}
+		// Wrong answer
+		else {
+			$json_return['state'] = 'WRONG_ANSWER';
+			add_json_message('error', 'Wrong answer please try again in <span class="time_left">' . self::ANSWER_DELAY . '</span> seconds.', $json_return);
 			$json_return['time_left'] = self::ANSWER_DELAY;
 			$this->team->update_last_answered($this->team_info->get_id(), time());
+			$this->guess->insert($team->id, $this->_current_quest_id, $answer);
 		}
 
 		echo json_encode($json_return);

@@ -269,17 +269,6 @@ function updateHint($hintElement) {
 		type: 'POST',
 		data: formData,
 		dataType: 'json',
-		success: function(json) {
-			if (json === null || json.success === undefined) {
-				addMessage('Return message is null, contact administrator', 'error');
-				return;
-			}
-
-			if (json.success) {
-			}
-
-			displayAjaxReturnMessages(json);
-		}
 	});
 }
 

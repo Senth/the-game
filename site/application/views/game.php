@@ -52,26 +52,31 @@ $answer_form.submit(function (ev) {
 		data: formData,
 		dataType: 'json',
 		success: function(json) {
-			if (json === null || json.success === undefined) {
+			if (json === null) {
 				addMessage('Return message is null, contact administrator', 'error');
 				return;
 			}
-			
-			if (json.success) {
-				addMessage('RIGHT ANSWER!', 'success', 100);
+
+			// Correct answer
+			if (json.state == 'CORRECT_ANSWER') {
 				getQuest(false);
 				getHints(false);
 				$('#messages').children().remove();
 				displayAjaxReturnMessages(json);
 			}
-			else {
+			// Wrong or wait
+			else if (json.state == 'WRONG_ANSWER' || json.state == 'WAIT') {
 				$timeLeft = $('.time_left')
 				if ($timeLeft.length == 0 || ($timeLeft.length > 0 && $timeLeft.data('time') == 0)) {
 					updateTimeLeft(json.time_left);
-					addMessage(json.error_messages, 'error', json.time_left * 1000);
-				}
+					addMessage(json.message, null, json.time_left * 1000);
+				}	
 			}
-
+			// Already answered
+			else if (json.state == 'ALREADY_ANSWERED') {
+				displayAjaxReturnMessages(json);
+				
+			}
 		}
 	});
 	$answer.val('');

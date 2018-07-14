@@ -43,11 +43,6 @@ class Quest extends GAME_Controller {
 	 * @param quest_id the specified quest to get
 	 */ 
 	public function get($quest_id) {
-		// Only handle ajax requests
-		if ($this->input->post('ajax') === FALSE) {
-			return;
-		}
-
 		$quest = $this->quest->get_quest($quest_id);
 
 		if ($quest !== FALSE) {
@@ -65,11 +60,6 @@ class Quest extends GAME_Controller {
 	 * @param quest_id 
 	 */ 
 	public function get_html($quest_id) {
-		// Only handle ajax requests
-		if ($this->input->post('ajax') === FALSE) {
-			return;
-		}
-
 		$quest = $this->quest->get_quest($quest_id);
 
 		if ($quest !== FALSE) {
@@ -120,11 +110,6 @@ class Quest extends GAME_Controller {
 	 */
 	public function get_all() {
 		log_message('debug', 'quest.get_all() called');
-		// Only handle ajax requests
-		if ($this->input->post('ajax') === FALSE) {
-			return;
-		}
-
 		$quests = $this->quest->get_all($this->input->post('arc_id'));
 
 		if ($quests !== FALSE) {
@@ -148,11 +133,6 @@ class Quest extends GAME_Controller {
 	 * Add a new empty quest
 	 */ 
 	public function add() {
-		// Only handle ajax requests
-		if ($this->input->post('ajax') === FALSE) {
-			return;
-		}
-
 		$this->quest->insert($this->input->post('arc_id'));
 
 		$json_return['success'] = TRUE;
@@ -161,14 +141,20 @@ class Quest extends GAME_Controller {
 	}
 
 	/**
+	 * Edit/Update main sub of a quest
+	 */ 
+	public function edit_main_sub() {
+		$id = $this->input->post('id');
+		$main = $this->input->post('main');
+		$sub = $this->input->post('sub');
+
+		$this->quest->update_main_sub($id, $main, $sub);
+	}
+
+	/**
 	 * Edit/Update a quest
 	 */
 	public function edit() {
-		// Only handle ajax requests
-		if ($this->input->post('ajax') === FALSE) {
-			return;
-		}
-
 		$id = $this->input->post('id');
 		$name = $this->input->post('name');
 		$main = $this->input->post('main');

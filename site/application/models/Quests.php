@@ -127,6 +127,13 @@ class Quests extends CI_Model {
 		$this->db->update('quest');
 	}
 
+	public function update_main_sub($id, $main, $sub) {
+		$this->db->set('main', $main);
+		$this->db->set('sub', $sub);
+		$this->db->where('id', $id);
+		$this->db->update('quest');
+	}
+
 	public function update($id, $name, $main, $sub, $html, $is_php, $answer, $points) {
 		$this->db->set('name', $name);
 		$this->db->set('main', $main);

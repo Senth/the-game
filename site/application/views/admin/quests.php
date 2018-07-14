@@ -17,7 +17,7 @@ function repopulateQuests(quests) {
 		quest = quests[i];
 
 		let html = '<tr>' +
-			'<td id="main_sub">' + quest['main'] + '-' + quest['sub'] + '</td>' +
+			'<td id="main_sub" contenteditable="true">' + quest['main'] + '-' + quest['sub'] + '</td>' +
 			'<td id="quest_name"><a href="' + baseUrl + 'admin/quest/view/' + quest['id'] + '">' + quest['name'] + '</a></td>' +
 			'<td class="centered" id="points">' + quest['points'] + '</td>' +
 			'<td class="icon"><img class="link" id="delete" src="' + baseUrl + 'assets/image/delete.png" /></td>' +
@@ -30,9 +30,35 @@ function repopulateQuests(quests) {
 			let $tr = $td.parent();
 			deleteQuest($tr);
 		});
+		$tr.find('#main_sub').on('blur', function() {
+			editQuest($(this).parent());
+		});
 		
 		$quest_container.append($tr);
 	}
+}
+
+function editQuest($questElement) {
+	let main_sub = $questElement.find('#main_sub').html().split('-');
+
+	if (main_sub.length != 2) {
+		addMessage('Invalid format', 'error');
+		return;
+	}
+
+	let formData = {
+		id: $questElement.data('id'),
+		main: main_sub[0],
+		sub: main_sub[1],
+	}
+
+	$.ajax({
+		url: baseUrl + 'admin/quest/edit-main-sub',
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
+	});
+
 }
 
 function deleteQuest($questElement) {

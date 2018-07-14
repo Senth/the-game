@@ -3,6 +3,7 @@ body,html {
 	margin: 0px;
 	background-color: #050505;
 	color: #DDD;
+	font-size: 16px;
 }
 
 #wrap {
@@ -100,6 +101,15 @@ h2 {
 
 h3 {
 	color: #64B5F6;
+}
+
+#sidebar > h3, #sidebar > h2 {
+	margin-bottom: 0px;
+	margin-top: 16px;
+}
+
+#sidebar > h3.margin, #sidebar > h2.margin {
+	margin-bottom: 8px;
 }
 
 th.icon, td.icon {

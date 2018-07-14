@@ -1,22 +1,27 @@
 <div id="sidebar">
 <div class="meter" style="width: 100%"><span id="arc_time_progress" style="width: 100%;"></span></div>
-<p style="margin-bottom: 2em;" class="progress_text" id="arc_time_text"></p>
+<p class="progress_text" id="arc_time_text"></p>
+<h2>Team Standings</h2>
+<table>
+<thead><tr><th>Team</th><th>Quest</th><th>Points</th></tr></thead>
+<tbody id="team_standings"></tbody>
+</table>
 <?php
 if ($team_info->is_logged_in()) {
 	$html = '
+		<h2 class="margin">Quest</h2>
 		<div class="meter" style="width: 100%"><span id="completed_progress"></span></div>
 		<p class="progress_text"><span id="completed_text">0/0</span> quests completed</p>
-		<h3>Score: <span id="points">0 points</span></h3>
-		<h3 style="margin-bottom: 0px;">Quest is worth: <span id="quest_worth">0 points</span></h3>
+		<h3>Quest is worth: <span id="quest_worth">0 points</span></h3>
 		<p class="progress_text">
 		Quest points: <span class="success" id="quest_points">0p</span><br />
 		Total hint penalty: <span class="error" id="total_hint_penalty">0p</span><br />
 		</p>
-		<h3 id="no_more_hints">Out Of Hints :(</h3>
-		<h3 id="hint_next_time_wrapper" style="display: none; margin-bottom: 0px;">
+		<h3 class="margin" id="no_more_hints">Out Of Hints :(</h3>
+		<h3 id="hint_next_time_wrapper" style="display: none;">
 		Next hint in: <span id="hint_next_time">0</span> seconds
 		</h3>
-		<h3 id="hint_next_notime_wrapper" style="display: none; margin-bottom: 0px">
+		<h3 id="hint_next_notime_wrapper" style="display: none;">
 		Next hint
 		</h3>
 		<p id="hint_next_penalty_wrapper" class="progress_text" style="display: none;">
@@ -29,10 +34,6 @@ if ($team_info->is_logged_in()) {
 	echo $html;
 }
 ?>
-<h2>Team Standings</h2>
-<table id="team-standings">
-<tr><th>Team</th><th>Quest</th><th>Points</th></tr>
-</table>
 </div>
 <script type="text/javascript">
 var isTeam = <?php echo $team_info->is_logged_in() ? 'true' : 'false'; ?>;
@@ -138,13 +139,13 @@ function updateSidebar() {
 
 			
 			// Team table
-			$table = $('#team-standings');
+			$tbody = $('#team_standings');
 
-			// Remove all rows except first
-			$table.find('tr:not(:first)').remove();
+			// Remove all rows
+			$tbody.children().remove();
 
 			for (var $i = 0; $i < json.c_teams; $i++) {
-				$table.append('<tr><td>' + json.teams[$i].name +
+				$tbody.append('<tr><td>' + json.teams[$i].name +
 					'</td><td>' + json.teams[$i].quest +
 					'</td><td>' + json.teams[$i].points + '</td></tr>');
 			}

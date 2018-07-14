@@ -56,7 +56,7 @@ class Sidebar extends GAME_Controller {
 					// Is automatically shown
 					if ($next_hint->time > 0) {
 						$time_since_started = time() - $team->started_quest;
-						$time_left = $next_hint->time - $time_since_started + 2;
+						$time_left = $next_hint->time - $time_since_started + 1;
 						$json_return['hint_next_time'] = $time_left;
 					}
 

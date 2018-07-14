@@ -30,7 +30,10 @@ if ($team_info->is_logged_in()) {
 		<p class="centered"><button id="hint_next_button">
 		<img src="' . base_url('/assets/image/fast_forward.png') . '" />
 		<div id="button_circle"></div>
-		</button></p>';
+		</button></p>
+		<h2>Your Guesses</h2>
+		<div id="guesses"></div>
+		';
 	echo $html;
 }
 ?>
@@ -100,7 +103,6 @@ function updateSidebar() {
 					$('#hint_next_button').css('display', 'none');
 				}
 
-
 				// Calculate completed
 				var completed = json.quests_completed;
 				var total = json.quests_total;
@@ -110,6 +112,14 @@ function updateSidebar() {
 					var completedPercent = completed / total * 100;
 					$('#completed_progress').css('width', completedPercent + '%');
 				}
+
+				// Add guesses
+				let guesses = '';
+				for (let i = 0; i < json.guesses.length; ++i) {
+					guesses += '<p class="guess">' + json.guesses[i].guess + '</p>';
+				}
+
+				$('#guesses').html(guesses);
 			}
 
 			// Arc time left
@@ -144,10 +154,10 @@ function updateSidebar() {
 			// Remove all rows
 			$tbody.children().remove();
 
-			for (var $i = 0; $i < json.c_teams; $i++) {
-				$tbody.append('<tr><td>' + json.teams[$i].name +
-					'</td><td>' + json.teams[$i].quest +
-					'</td><td>' + json.teams[$i].points + '</td></tr>');
+			for (let i = 0; i < json.c_teams; i++) {
+				$tbody.append('<tr><td>' + json.teams[i].name +
+					'</td><td>' + json.teams[i].quest +
+					'</td><td>' + json.teams[i].points + '</td></tr>');
 			}
 		}
 	});

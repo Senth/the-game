@@ -112,6 +112,10 @@ h3 {
 	margin-bottom: 8px;
 }
 
+.guess {
+	margin: 0;
+}
+
 th.icon, td.icon {
 	text-align: center;
 }

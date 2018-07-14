@@ -39,5 +39,7 @@ class Guesses extends CI_Model {
 		$this->db->select(self::C_GUESS);
 		$this->db->where(self::C_TEAM_ID, $team_id);
 		$this->db->where(self::C_QUEST_ID, $quest_id);
+		$this->db->order_by(self::C_GUESS, 'ASC');
+		return $this->db->get()->result();
 	}
 }

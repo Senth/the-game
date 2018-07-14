@@ -7,6 +7,7 @@ class Sidebar extends GAME_Controller {
 		$this->load->model('Quests', 'quest');
 		$this->load->model('Hints', 'hint');
 		$this->load->model('Arcs', 'arc');
+		$this->load->model('Guesses', 'guess');
 
 		if ($this->team_info->is_logged_in()) {
 			$this->_current_quest_id = $this->team->get_current_quest($this->team_info->get_id());
@@ -39,6 +40,9 @@ class Sidebar extends GAME_Controller {
 
 				// Completed
 				$this->_calculate_completed($quest->arc_id, $json_return);
+
+				// Guesses
+				$json_return['guesses'] = $this->guess->get_team_guesses($team->id, $this->_current_quest_id);
 
 				// Hint time and information
 				$team = $this->team->get_team($this->team_info->get_id());

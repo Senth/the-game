@@ -78,6 +78,21 @@ class Hints extends CI_Model {
 		$this->db->update('hint');
 	}
 
+	public function copy_to($from_quest_id, $to_quest_id) {
+		$hints = $this->get_hints($from_quest_id);
+
+		if ($hints !== null) {
+			$this->db->trans_start();
+			foreach ($hints as $hint) {
+				$hint->quest_id = $to_quest_id;
+				unset($hint->id);
+				$this->db->insert('hint', $hint);
+			}
+
+			$this->db->trans_complete();
+		}
+	}
+
 	public function move($id, $order) {
 		$this->db->from('hint');
 		$this->db->select('order');
@@ -115,8 +130,13 @@ class Hints extends CI_Model {
 		}
 	}
 
+	public function delete_all_from_quest($quest_id) {
+		$this->db->where('quest_id', $quest_id);
+		$this->db->delete('hint');
+	}
+
 	public function delete($id) {
-		// Get hint order and move up all hints underN it
+		// Get hint order and move up all hints under it
 		$this->db->from('hint');
 		$this->db->select('quest_id');
 		$this->db->select('order');

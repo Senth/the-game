@@ -18,27 +18,14 @@ class Quests extends CI_Model {
 		$this->db->order_by('main', 'asc');
 		$this->db->order_by('sub', 'asc');
 
-		$query = $this->db->get();
-
-		if ($query->num_rows() > 0) {
-			return $query->result();
-		} else {
-			return FALSE;
-		}
+		return $this->db->get()->result();
 	}
 
 	public function get_quest($id) {
 		$this->db->from('quest');
 		$this->db->where('id', $id);
 
-		$query = $this->db->get();
-
-		// Return row
-		if ($query->num_rows() == 1) {
-			return $query->row();
-		} else {
-			return FALSE;
-		}
+		return $this->db->get()->row();
 	}
 
 	public function get_first_quest() {
@@ -48,14 +35,7 @@ class Quests extends CI_Model {
 		$this->db->order_by('arc_id', 'desc');
 		$this->db->limit(1);
 		
-		$query = $this->db->get();
-
-		// Return row
-		if ($query->num_rows() == 1) {
-			return $query->row();
-		} else {
-			return FALSE;
-		}
+		return $this->db->get()->row();
 	}
 
 	public function get_next_quest_id($quest_id) {
@@ -138,13 +118,29 @@ class Quests extends CI_Model {
 		$this->db->set('name', $name);
 		$this->db->set('main', $main);
 		$this->db->set('sub', $sub);
-		log_message('debug', 'HTML: ' . $html);
 		$this->db->set('html', $html);
 		$this->db->set('html_is_php', $is_php ? 1 : 0);
 		$this->db->set('answer', $answer);
 		$this->db->set('points', $points);
 		$this->db->where('id', $id);
 		$this->db->update('quest');
+	}
+
+	public function copy_to($id, $arc_id) {
+		// Get quest
+		$quest = $this->get_quest($id);
+
+		// Copy quest to newest arc
+		if ($quest !== null) {
+			unset($quest->id);
+			$quest->main = 9;
+			$quest->sub = 9;
+			$quest->arc_id = $arc_id;
+			$this->db->insert('quest', $quest);
+			return $this->db->insert_id();
+		}
+		
+		return null;
 	}
 
 	/**

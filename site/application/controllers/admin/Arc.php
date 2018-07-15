@@ -9,7 +9,7 @@ class Arc extends GAME_Controller {
 	 */ 
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('arcs', 'arc');
+		$this->load->model('Arcs', 'arc');
 	}
 
 	/**
@@ -100,8 +100,14 @@ class Arc extends GAME_Controller {
 
 		$id = $this->arc->add($this->input->post('name'));
 
+
+
 		if (isset($id)) {
 			$json_return['success'] = TRUE;
+			
+			// Get arc length
+			$arc = $this->arc->get($id);
+			$json_return['length'] = $arc->length;
 			$json_return['arc_id'] = $id;
 		} else {
 			$json_return['success'] = FALSE;

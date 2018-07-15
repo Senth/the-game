@@ -1,6 +1,6 @@
 <h1><?php echo $arc_name; ?></h1>
 <table>
-<thead><tr><th>#</th><th>Name</th><th>Points</th><th>Delete</th></tr></thead>
+<thead><tr><th class="centered">#</th><th>Name</th><th>Points</th><th>Delete</th><th>Reuse in Arc</th></tr></thead>
 <tbody id="quest_container"></tbody>
 </table>
 <input class="big" type="submit" id="add_quest" value="Add Quest"></h2>
@@ -21,6 +21,7 @@ function repopulateQuests(quests) {
 			'<td id="quest_name"><a href="' + baseUrl + 'admin/quest/view/' + quest['id'] + '">' + quest['name'] + '</a></td>' +
 			'<td class="centered" id="points">' + quest['points'] + '</td>' +
 			'<td class="icon"><img class="link" id="delete" src="' + baseUrl + 'assets/image/delete.png" /></td>' +
+			'<td class="icon"><img class="link" id="reuse_quest" src="' + baseUrl + 'assets/image/autorenew.png" /></td>' +
 			'</tr>';
 
 		let $tr = $(html);
@@ -33,9 +34,33 @@ function repopulateQuests(quests) {
 		$tr.find('#main_sub').on('blur', function() {
 			editQuest($(this).parent());
 		});
+		$tr.find('#reuse_quest').click(function() {
+			reuseQuest($(this).parent().parent());
+		});
 		
 		$quest_container.append($tr);
 	}
+}
+
+function reuseQuest($questElement) {
+	let formData = {
+		id: $questElement.data('id'),
+	}
+
+	$.ajax({
+		url: baseUrl + 'admin/quest/reuse',
+		type: 'POST',
+		data: formData,
+		dataType: 'json',
+		success: function(json) {
+			if (json === null) {
+				addMessage('Return message is null, contact administrator', 'error');
+				return;
+			}
+
+			displayAjaxReturnMessages(json);
+		}
+	});
 }
 
 function editQuest($questElement) {

@@ -57,6 +57,11 @@ class Teams extends CI_Model {
 
 	public function get_teams() {
 		$this->db->from('team');
+		return $this->db->get()->result();
+	}
+
+	public function get_active_teams() {
+		$this->db->from('team');
 		$this->db->where('active', 1);
 		$query = $this->db->get();
 
@@ -125,6 +130,27 @@ class Teams extends CI_Model {
 	public function add_points($team_id, $points) {
 		$this->db->set('`points`', "`points` + $points", FALSE);
 		$this->db->where('id', $team_id);
+		$this->db->update('team');
+	}
+
+	public function insert($name, $password) {
+		$this->db->set('name', $name);
+		$this->db->set('password', $password);
+		$this->db->insert('team');
+		return $this->db->insert_id();
+	}
+
+	public function update($id, $name, $password, $active) {
+		if ($name !== null) {
+			$this->db->set('name', $name);
+		}
+		if ($password !== null) {
+			$this->db->set('password', $password);
+		}
+		if ($active !== null) {
+			$this->db->set('active', $active);
+		}
+		$this->db->where('id', $id);
 		$this->db->update('team');
 	}
 }

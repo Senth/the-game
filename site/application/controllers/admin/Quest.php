@@ -45,7 +45,7 @@ class Quest extends GAME_Controller {
 	public function get($quest_id) {
 		$quest = $this->quest->get_quest($quest_id);
 
-		if ($quest !== FALSE) {
+		if ($quest !== null) {
 			$json_return['success'] = TRUE;
 			$json_return['quest'] = $quest;
 		} else {
@@ -62,7 +62,7 @@ class Quest extends GAME_Controller {
 	public function get_html($quest_id) {
 		$quest = $this->quest->get_quest($quest_id);
 
-		if ($quest !== FALSE) {
+		if ($quest !== null) {
 			$html = $this->_get_correct_html($quest);
 
 			$json_return['html'] = $html;
@@ -112,7 +112,7 @@ class Quest extends GAME_Controller {
 		log_message('debug', 'quest.get_all() called');
 		$quests = $this->quest->get_all($this->input->post('arc_id'));
 
-		if ($quests !== FALSE) {
+		if ($quests !== null) {
 			log_message('debug', 'quest.get_all() Found ' . count($quests) . ' quests');
 			// Get all hints of the current quest
 			foreach ($quests as $quest) {
@@ -172,12 +172,71 @@ class Quest extends GAME_Controller {
 	}
 
 	public function remove() {
+		// Remove quest
 		$id = $this->input->post('id');
-
-		log_message('debug', 'Delete quest with id: ' . $id);
 		$this->quest->delete($id);
+
+		// Remove hints
+		$this->hint->delete_all_from_quest($id);
 
 		$json_return['success'] = TRUE;
 		echo json_encode($json_return);
+	}
+
+	public function reuse() {
+		$this->load->model('Arcs', 'arc');
+		$id = $this->input->post('id');
+
+		// Get latest arc
+		$latest_arc = $this->arc->get_latest();
+
+		// Copy quest to latest arc
+		$new_quest_id = $this->quest->copy_to($id, $latest_arc->id);
+
+		if ($new_quest_id === null || $new_quest_id === 0) {
+			$json_return = create_json_message('error', 'Couldn\'t create new quest');
+			echo json_encode($json_return);
+			return;
+		}
+
+		// Copy all hints to the new quest id
+		$this->hint->copy_to($id, $new_quest_id);
+		
+		// Copy assets to new game folder
+		$this->_copy_assets_to_new_arc($id, $latest_arc->id);
+		
+		$json_return = create_json_message('success', 'Copied quest to latest arc');
+		echo json_encode($json_return);
+	}
+
+	private function _copy_assets_to_new_arc($from_quest_id, $to_arc_id) {
+		// Get from_arc_id
+		$quest = $this->quest->get_quest($from_quest_id);
+
+		if ($quest === null) {
+			return;
+		}
+		$from_arc_id = $quest->arc_id;
+
+		// Check quest html to find possible assets
+		$REGEX = '/\(([^\)]*)\)/';
+		$cMatches = preg_match_all($REGEX, $quest->html, $matches, PREG_PATTERN_ORDER);
+
+		if ($cMatches !== FALSE && $cMatches > 0) {
+			$files = $matches[1];
+			
+			$from_prefix = 'assets/game/' . $from_arc_id . '/';
+			$to_prefix = 'assets/game/' . $to_arc_id . '/';
+
+			// Create game arc dir if it doesn't exist
+			mkdir($to_prefix, 0744, true);
+
+			// Copy each file
+			foreach($files as $file) {
+				$from = $from_prefix . $file;
+				$to = $to_prefix . $file;
+				copy($from, $to);
+			}	
+		}
 	}
 }

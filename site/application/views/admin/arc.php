@@ -17,6 +17,8 @@
 	echo form_close();
 ?>
 
+<h3><a href="<?php echo base_url('admin/team'); ?>">View Teams</a></h3>
+
 <script type="text/javascript">
 var baseUrl = '<?php echo base_url(); ?>';
 
@@ -68,7 +70,7 @@ function addArc(id, name, length, started) {
 	html += '</td>' +
 		'<td class="centered"><img class="link" id="reset_arc" src="' + baseUrl + 'assets/image/restore.png" /></td>' + 
 		'</tr>';
-	$arc = $(html);
+	let $arc = $(html);
 	$arc.data('id', id);
 	$table = $('#arc_table');
 	$table.append($arc);
@@ -197,7 +199,7 @@ $form = $('#add_form');
 $form.submit(function(ev) {
 	var formData = {
 		ajax: true,
-		name: $('#name').val()
+		name: $(this).find('#name').val()
 	}
 
 	$.ajax({
@@ -213,7 +215,7 @@ $form.submit(function(ev) {
 
 			// Successful -> Append to table
 			if (json.success) {
-				addArc(json.arc_id, formData.name);
+				addArc(json.arc_id, formData.name, json.length);
 			}
 
 			displayAjaxReturnMessages(json);

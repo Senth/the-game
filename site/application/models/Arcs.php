@@ -17,36 +17,24 @@ class Arcs extends CI_Model {
 	}
 
 	/**
-	 * @return all existing arcs, FALSE if none was found
+	 * @return all existing arcs, null if none was found
 	 */
 	public function get_all() {
 		$this->db->from('arc');
 
-		$query = $this->db->get();
-
-		if ($query->num_rows() > 0) {
-			return $query->result();
-		} else {
-			return FALSE;
-		}
+		return $this->db->get()->result();
 	}
 
 	/**
 	 * Get the latest arc
-	 * @return latest arc, FALSE if none was found
+	 * @return latest arc, null if none was found
 	 */ 
 	public function get_latest() {
 		$this->db->from('arc');
 		$this->db->order_by('id', 'desc');
 		$this->db->limit(1);
 
-		$query = $this->db->get();
-
-		if ($query->num_rows() == 1) {
-			return $query->row();
-		} else {
-			return FALSE;
-		}
+		return $this->db->get()->row();
 	}
 
 	/**
@@ -58,13 +46,7 @@ class Arcs extends CI_Model {
 		$this->db->from('arc');
 		$this->db->where('id', $id);
 
-		$query = $this->db->get();
-
-		if ($query->num_rows() == 1) {
-			return $query->row();
-		} else {
-			return FALSE;
-		}
+		return $this->db->get()->row();
 	}
 
 	/**

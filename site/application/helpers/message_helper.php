@@ -1,13 +1,23 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 function add_json_message($class, $message, &$json) {
-	$p_message = '<p class="' . $class . '">' . $message . '</p>\n'; 
+	$p_message = create_message($class, $message);
 	if (isset($json['message'])) {
 		$json['message'] .= $p_message;
 	} else {
 		$json['message'] = $p_message;
 	}
 }
+
+function create_json_message($class, $message) {
+	$json['message'] = create_message($class, $message);
+	return $json;
+}
+
+function create_message($class, $message) {	
+	return '<p class="' . $class . '">' . $message . '</p>\n'; 
+}
+
 // 
 // //--------------------- ERRORS ----------------------
 // 

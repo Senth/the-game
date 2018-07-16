@@ -6,6 +6,8 @@ class GAME_Controller extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 
+		$this->load->library('session');
+
 		// Get session team info
 		$team = $this->session->userdata('team');
 		if ($team != null) {
@@ -59,12 +61,6 @@ class GAME_Controller extends CI_Controller {
 			'user_info' => $this->user_info
 		);
 
-// 		$this->load->view('template/header');
-// 		if ($this->team_info->is_logged_in() || $this->user_info->is_logged_in()) {
-// 			$this->load->view('template/sidebar');
-// 		}
-// 		$this->load->view('template/content', $inner_content);
-		// 		$this->load->view('template/footer'); 
 		$this->load->view('template/index', $view_data);
 	}
 
